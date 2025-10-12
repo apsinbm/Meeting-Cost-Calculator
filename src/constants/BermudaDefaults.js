@@ -11,8 +11,12 @@ export const BermudaDefaults = {
   socialInsuranceWeekly: 37.65,    // $37.65/week employer portion (as of August 1, 2025)
   socialInsuranceAnnual: 1957.80,  // $37.65 × 52 weeks = $1,957.80/year per employee
 
+  // Pension (Occupational Pensions Act)
+  employerPensionRate: 5,          // 5% employer match (typical rate)
+
   // Benefits
-  standardHealthInsurance: 12000,  // $12,000 annual - company pays half ($6,000)
+  defaultHealthInsuranceMonthly: 500,  // $500/month per employee default (editable for dependents)
+  defaultHealthInsuranceAnnual: 6000,  // $500 × 12 months
 
   // Currency
   defaultCurrency: 'BMD',     // Bermuda Dollar

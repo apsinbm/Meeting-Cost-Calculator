@@ -158,11 +158,11 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
           <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.costLabel}>
             MEETING COST
           </AppText>
-          <AppText variant="costDisplay" style={styles.costDisplay}>
+          <AppText variant="costDisplay" style={[styles.costDisplay, !isPaused && styles.costDisplayRising]}>
             ${realTimeCost.currentCost.toFixed(2)}
           </AppText>
           <AppText variant="body" color={Colors.textSecondary} style={styles.costSubtext}>
-            and counting...
+            {isPaused ? 'paused' : 'and counting...'}
           </AppText>
         </View>
 
@@ -327,6 +327,9 @@ const styles = StyleSheet.create({
     fontSize: 72,
     fontWeight: '700',
     marginBottom: Spacing.xs,
+  },
+  costDisplayRising: {
+    color: Colors.error,  // Red when cost is rising
   },
   costSubtext: {
     fontStyle: 'italic',

@@ -23,7 +23,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     email: existingEmployee?.email || '',
     annualSalary: existingEmployee?.annualSalary?.toString() || '',
     annualBonus: existingEmployee?.annualBonus?.toString() || '',
-    includesHealthInsurance: existingEmployee?.includesHealthInsurance !== false,
+    healthInsuranceAnnual: existingEmployee?.healthInsuranceAnnual?.toString() || '6000',  // $500/month default
   });
   const [errors, setErrors] = useState({});
   const [costBreakdown, setCostBreakdown] = useState(null);
@@ -32,7 +32,13 @@ const AddEmployeeScreen = ({ navigation, route }) => {
   useEffect(() => {
     if (employee.annualSalary) {
       try {
-        const costs = EmployeeCostCalculator.calculateEmployeeCost(employee);
+        const employeeData = {
+          ...employee,
+          annualSalary: parseFloat(employee.annualSalary) || 0,
+          annualBonus: parseFloat(employee.annualBonus) || 0,
+          healthInsuranceAnnual: parseFloat(employee.healthInsuranceAnnual) || 6000,
+        };
+        const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData);
         setCostBreakdown(costs);
       } catch (error) {
         setCostBreakdown(null);
@@ -40,7 +46,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     } else {
       setCostBreakdown(null);
     }
-  }, [employee.annualSalary, employee.annualBonus, employee.includesHealthInsurance]);
+  }, [employee.annualSalary, employee.annualBonus, employee.healthInsuranceAnnual]);
 
   const updateField = (field, value) => {
     setEmployee(prev => ({ ...prev, [field]: value }));
@@ -222,19 +228,18 @@ const AddEmployeeScreen = ({ navigation, route }) => {
               Benefits
             </AppText>
 
-            <Card style={styles.benefitCard}>
-              <View style={styles.benefitRow}>
-                <View style={styles.benefitInfo}>
-                  <AppText variant="body">Company pays half of health insurance</AppText>
-                  <AppText variant="caption" color={Colors.textSecondary}>
-                    Standard Bermuda practice
-                  </AppText>
-                </View>
-                <AppText variant="body" color={Colors.primary}>
-                  {employee.includesHealthInsurance ? 'Yes' : 'No'}
-                </AppText>
-              </View>
-            </Card>
+            <Input
+              label="Annual Health Insurance Cost *"
+              value={employee.healthInsuranceAnnual}
+              onChangeText={(value) => updateField('healthInsuranceAnnual', value)}
+              error={errors.healthInsuranceAnnual}
+              placeholder="6000"
+              keyboardType="numeric"
+            />
+
+            <AppText variant="caption" color={Colors.textSecondary} style={styles.hint}>
+              Default: $6,000/year ($500/month). Adjust if employee has dependents.
+            </AppText>
           </View>
 
           {/* Live Cost Preview */}

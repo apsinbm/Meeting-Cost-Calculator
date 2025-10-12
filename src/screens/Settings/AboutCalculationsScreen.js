@@ -36,8 +36,9 @@ const AboutCalculationsScreen = ({ navigation }) => {
             <View style={styles.bulletList}>
               <BulletPoint text="Base annual salary" />
               <BulletPoint text="Annual bonus (if applicable)" />
-              <BulletPoint text="Company's portion of health insurance (50% of standard $12,000)" />
+              <BulletPoint text="Health insurance ($6,000/year default, editable per employee)" />
               <BulletPoint text="Payroll tax (10% of total compensation, capped at $1M per employee)" />
+              <BulletPoint text="Employer pension match (5% of annual salary)" />
               <BulletPoint text="Social insurance ($37.65/week = $1,957.80/year per employee)" />
             </View>
           </Card>
@@ -115,6 +116,32 @@ const AboutCalculationsScreen = ({ navigation }) => {
             </View>
             <AppText variant="caption" color={Colors.textSecondary} style={styles.paragraph}>
               For employees aged 65+, the employee portion is dropped but employer still pays $37.65/week.
+            </AppText>
+          </Card>
+        </View>
+
+        {/* Employer Pension Match */}
+        <View style={styles.section}>
+          <AppText variant="h3" style={styles.sectionTitle}>
+            Employer Pension Match
+          </AppText>
+          <Card>
+            <AppText variant="body" style={styles.paragraph}>
+              Under the Occupational Pensions Act, employers must match employee pension contributions. The typical employer contribution rate is 5% of annual salary.
+            </AppText>
+            <AppText variant="bodySmall" style={[styles.paragraph, { fontWeight: '600' }]}>
+              This app uses a 5% employer pension match rate.
+            </AppText>
+            <AppText variant="bodySmall" style={styles.paragraph}>
+              Example for a $65,000 employee:
+            </AppText>
+            <View style={styles.bulletList}>
+              <BulletPoint text="Employee contributes: $3,250/year (5%)" small />
+              <BulletPoint text="Employer matches: $3,250/year (5%)" small />
+              <BulletPoint text="Total pension contribution: $6,500/year" small />
+            </View>
+            <AppText variant="caption" color={Colors.textSecondary} style={styles.paragraph}>
+              The employer match percentage may vary by company policy, but 5% is standard practice in Bermuda.
             </AppText>
           </Card>
         </View>

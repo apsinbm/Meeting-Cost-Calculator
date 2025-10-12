@@ -5,10 +5,13 @@ import { BermudaDefaults } from '../constants';
  * Calculates true cost to company including all Bermuda employment expenses
  *
  * Formula (2025-26 Bermuda rates):
- * Total Annual Cost = Salary + Bonus + (Health Insurance / 2) + Payroll Tax + Social Insurance
+ * Total Annual Cost = Salary + Bonus + Health Insurance + Payroll Tax + Pension + Social Insurance
  *
- * Payroll Tax: 10% of total compensation, capped at $1M per employee
- * Social Insurance: Fixed $37.65/week ($1,957.80/year) per employee - NOT percentage-based
+ * Components:
+ * - Payroll Tax: 10% of total compensation, capped at $1M per employee
+ * - Employer Pension: 5% of annual salary (Occupational Pensions Act)
+ * - Social Insurance: Fixed $37.65/week ($1,957.80/year) - NOT percentage-based
+ * - Health Insurance: $500/month default ($6,000/year), editable per employee
  *
  * Hourly Cost = Total Annual Cost / 2080 hours (40 hours/week * 52 weeks)
  * Per-Minute Cost = Hourly Cost / 60
@@ -25,38 +28,42 @@ class EmployeeCostCalculator {
     const {
       annualSalary = 0,
       annualBonus = 0,
-      includesHealthInsurance = true,
+      healthInsuranceAnnual = null,  // Allow per-employee override
     } = employee;
 
     // Get rates from settings or use defaults
     const payrollTaxRate = settings?.payrollTaxRate || BermudaDefaults.payrollTaxRate;
     const payrollTaxCap = settings?.payrollTaxCap || BermudaDefaults.payrollTaxCap;
+    const employerPensionRate = settings?.employerPensionRate || BermudaDefaults.employerPensionRate;
     const socialInsuranceAnnual = settings?.socialInsuranceAnnual || BermudaDefaults.socialInsuranceAnnual;
-    const standardHealthInsurance = settings?.standardHealthInsurance || BermudaDefaults.standardHealthInsurance;
+    const defaultHealthInsurance = settings?.defaultHealthInsuranceAnnual || BermudaDefaults.defaultHealthInsuranceAnnual;
 
     // Step 1: Total Annual Compensation
     const totalCompensation = this._safeNumber(annualSalary) + this._safeNumber(annualBonus);
 
-    // Step 2: Health Insurance Company Portion (company pays half)
-    const healthInsuranceCompanyPortion = includesHealthInsurance
-      ? standardHealthInsurance / 2
-      : 0;
+    // Step 2: Health Insurance (use employee-specific or default)
+    const healthInsuranceCost = healthInsuranceAnnual !== null
+      ? this._safeNumber(healthInsuranceAnnual)
+      : defaultHealthInsurance;
 
     // Step 3: Payroll Tax (10% of total compensation, capped at $1M per employee)
     const taxableCompensation = Math.min(totalCompensation, payrollTaxCap);
     const payrollTax = taxableCompensation * (payrollTaxRate / 100);
 
-    // Step 4: Social Insurance (fixed $37.65/week = $1,957.80/year per employee)
+    // Step 4: Employer Pension Match (5% of annual salary - Occupational Pensions Act)
+    const employerPension = this._safeNumber(annualSalary) * (employerPensionRate / 100);
+
+    // Step 5: Social Insurance (fixed $37.65/week = $1,957.80/year per employee)
     // This is NOT percentage-based - it's a flat contribution under Contributory Pensions Act 1970
     const socialInsurance = socialInsuranceAnnual;
 
-    // Step 5: Total Annual Cost to Company
-    const totalAnnualCost = totalCompensation + healthInsuranceCompanyPortion + payrollTax + socialInsurance;
+    // Step 6: Total Annual Cost to Company
+    const totalAnnualCost = totalCompensation + healthInsuranceCost + payrollTax + employerPension + socialInsurance;
 
-    // Step 6: Hourly Cost (based on 40-hour work week, 52 weeks)
+    // Step 7: Hourly Cost (based on 40-hour work week, 52 weeks)
     const hourlyCost = totalAnnualCost / BermudaDefaults.workHoursPerYear;
 
-    // Step 7: Per-Minute Cost
+    // Step 8: Per-Minute Cost
     const perMinuteCost = hourlyCost / 60;
 
     return {
@@ -64,9 +71,10 @@ class EmployeeCostCalculator {
       annualSalary: this._round2(annualSalary),
       annualBonus: this._round2(annualBonus),
       totalCompensation: this._round2(totalCompensation),
-      healthInsuranceCompanyPortion: this._round2(healthInsuranceCompanyPortion),
+      healthInsuranceCost: this._round2(healthInsuranceCost),
       taxableCompensation: this._round2(taxableCompensation),
       payrollTax: this._round2(payrollTax),
+      employerPension: this._round2(employerPension),
       socialInsurance: this._round2(socialInsurance),
 
       // Totals
@@ -77,8 +85,9 @@ class EmployeeCostCalculator {
       // Rates/values used
       payrollTaxRate,
       payrollTaxCap,
+      employerPensionRate,
       socialInsuranceAnnual,
-      standardHealthInsurance,
+      defaultHealthInsurance,
     };
   }
 
