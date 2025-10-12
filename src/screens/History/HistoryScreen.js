@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, FlatList, RefreshControl, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl, Alert, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, Button } from '../../components';
 import { Colors, Spacing } from '../../constants';
 import MeetingService from '../../services/MeetingService';
+import MeetingCostCalculator from '../../services/MeetingCostCalculator';
 import EmailService from '../../services/EmailService';
 import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
 
@@ -17,6 +18,9 @@ const HistoryScreen = () => {
   const [summary, setSummary] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editingMeeting, setEditingMeeting] = useState(null);
+  const [newDuration, setNewDuration] = useState('');
 
   useFocusEffect(
     useCallback(() => {
@@ -55,40 +59,41 @@ const HistoryScreen = () => {
   };
 
   const handleEditMeeting = (meeting) => {
-    Alert.alert(
-      'Edit Meeting',
-      'Adjust attendees or duration',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Edit Duration',
-          onPress: () => {
-            Alert.prompt(
-              'Edit Duration',
-              `Current: ${meeting.actualMinutes} minutes`,
-              [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                  text: 'Save',
-                  onPress: async (newDuration) => {
-                    const minutes = parseInt(newDuration);
-                    if (minutes && minutes > 0) {
-                      await MeetingService.updateMeeting(meeting.id, {
-                        actualMinutes: minutes,
-                        actualCost: (minutes / 60) * meeting.attendees.reduce((sum, att) => sum + att.perMinuteCost * 60, 0),
-                      });
-                      loadHistory();
-                    }
-                  },
-                },
-              ],
-              'plain-text',
-              meeting.actualMinutes.toString()
-            );
-          },
-        },
-      ]
+    setEditingMeeting(meeting);
+    setNewDuration(meeting.actualMinutes.toString());
+    setEditModalVisible(true);
+  };
+
+  const handleSaveEditedDuration = async () => {
+    const minutes = parseInt(newDuration);
+    if (!minutes || minutes <= 0) {
+      Alert.alert('Invalid Duration', 'Please enter a valid number of minutes');
+      return;
+    }
+
+    if (!editingMeeting) return;
+
+    // Recalculate all derived fields using MeetingCostCalculator
+    const scheduledMinutes = editingMeeting.durationMinutes || 0;
+    const finalCosts = MeetingCostCalculator.calculateFinalCost(
+      editingMeeting.attendees,
+      minutes,
+      scheduledMinutes
     );
+
+    await MeetingService.updateMeeting(editingMeeting.id, {
+      actualMinutes: minutes,
+      actualCost: finalCosts.actualCost,
+      costDifference: finalCosts.costDifference,
+      ranOver: finalCosts.ranOver,
+      endedEarly: finalCosts.endedEarly,
+      minutesDifference: minutes - scheduledMinutes,
+    });
+
+    setEditModalVisible(false);
+    setEditingMeeting(null);
+    setNewDuration('');
+    loadHistory();
   };
 
   const handleDeleteMeeting = (meeting) => {
@@ -283,6 +288,64 @@ const HistoryScreen = () => {
           )
         }
       />
+
+      {/* Edit Duration Modal */}
+      <Modal
+        visible={editModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setEditModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <AppText variant="h3" style={styles.modalTitle}>
+              Edit Meeting Duration
+            </AppText>
+
+            {editingMeeting && (
+              <AppText variant="body" color={Colors.textSecondary} style={styles.modalSubtitle}>
+                {editingMeeting.title}
+              </AppText>
+            )}
+
+            <View style={styles.inputContainer}>
+              <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.inputLabel}>
+                Duration (minutes)
+              </AppText>
+              <TextInput
+                style={styles.textInput}
+                value={newDuration}
+                onChangeText={setNewDuration}
+                keyboardType="number-pad"
+                placeholder="Enter minutes"
+                autoFocus
+              />
+            </View>
+
+            <View style={styles.modalButtons}>
+              <Button
+                title="Cancel"
+                variant="secondary"
+                onPress={() => {
+                  setEditModalVisible(false);
+                  setEditingMeeting(null);
+                  setNewDuration('');
+                }}
+                style={styles.modalButton}
+              />
+              <Button
+                title="Save"
+                variant="primary"
+                onPress={handleSaveEditedDuration}
+                style={styles.modalButton}
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -392,6 +455,48 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.xxl,
+  },
+  modalTitle: {
+    marginBottom: Spacing.xs,
+  },
+  modalSubtitle: {
+    marginBottom: Spacing.lg,
+  },
+  inputContainer: {
+    marginBottom: Spacing.xl,
+  },
+  inputLabel: {
+    marginBottom: Spacing.xs,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    fontSize: 16,
+    color: Colors.text,
+    backgroundColor: Colors.background,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  modalButton: {
+    flex: 1,
   },
 });
 
