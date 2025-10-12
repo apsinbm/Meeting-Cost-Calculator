@@ -37,10 +37,11 @@ const TodayScreen = ({ navigation }) => {
       setEmployees(allEmployees);
     } catch (error) {
       console.error('Error loading employees:', error);
+      Alert.alert('Error', 'Failed to load employees. Please try again.');
     }
   };
 
-  const loadMeetings = async () => {
+  const loadMeetings = async (updatedManualAttendees = null) => {
     try {
       setLoading(true);
 
@@ -58,6 +59,9 @@ const TodayScreen = ({ navigation }) => {
       // Get today's meetings
       const todayMeetings = await CalendarService.getTodayMeetings();
 
+      // Use provided attendees or fall back to state
+      const attendeesMap = updatedManualAttendees || manualAttendees;
+
       // Calculate pre-meeting costs
       const meetingsWithCosts = [];
       for (const meeting of todayMeetings) {
@@ -65,7 +69,7 @@ const TodayScreen = ({ navigation }) => {
         const matchedAttendees = meeting.attendees.matched || [];
 
         // Use manually selected attendees if available, otherwise use matched attendees
-        const attendeesToUse = manualAttendees[meetingId] || matchedAttendees;
+        const attendeesToUse = attendeesMap[meetingId] || matchedAttendees;
 
         if (attendeesToUse.length > 0) {
           const costData = MeetingCostCalculator.calculatePreMeetingCost(
@@ -85,6 +89,11 @@ const TodayScreen = ({ navigation }) => {
       setMeetings(meetingsWithCosts);
     } catch (error) {
       console.error('Error loading meetings:', error);
+      Alert.alert(
+        'Calendar Error',
+        'Unable to load calendar meetings. Please check your calendar permissions.',
+        [{ text: 'OK' }]
+      );
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -145,13 +154,15 @@ const TodayScreen = ({ navigation }) => {
     } else if (selectedMeeting) {
       // Selecting attendees for existing calendar meeting
       const meetingId = selectedMeeting.calendarEventId;
-      setManualAttendees(prev => ({
-        ...prev,
+      const updatedAttendees = {
+        ...manualAttendees,
         [meetingId]: selectedEmployees,
-      }));
+      };
 
-      // Reload meetings to recalculate costs with new attendees
-      loadMeetings();
+      setManualAttendees(updatedAttendees);
+
+      // Reload meetings with updated attendees to recalculate costs immediately
+      loadMeetings(updatedAttendees);
       setModalVisible(false);
       setSelectedMeeting(null);
     }

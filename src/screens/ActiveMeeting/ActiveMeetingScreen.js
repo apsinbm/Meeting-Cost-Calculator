@@ -20,7 +20,8 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   const timerRef = useRef(null);
   const isPausedRef = useRef(false);
   const startTimeRef = useRef(Date.now());
-  const pausedTimeRef = useRef(0);
+  const pausedTimeRef = useRef(0); // Total accumulated paused time in milliseconds
+  const pauseStartRef = useRef(null); // When current pause started
 
   useEffect(() => {
     startMeeting();
@@ -61,11 +62,17 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
 
   const handlePause = () => {
     if (isPausedRef.current) {
-      // Resuming
+      // Resuming - accumulate the paused time
+      if (pauseStartRef.current) {
+        const pauseDuration = Date.now() - pauseStartRef.current;
+        pausedTimeRef.current += pauseDuration;
+        pauseStartRef.current = null;
+      }
       isPausedRef.current = false;
       setIsPaused(false);
     } else {
-      // Pausing
+      // Pausing - record when pause started
+      pauseStartRef.current = Date.now();
       isPausedRef.current = true;
       setIsPaused(true);
     }
@@ -76,8 +83,14 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
       clearInterval(timerRef.current);
     }
 
+    // If still paused when ending, add the current pause duration
+    let totalPausedMs = pausedTimeRef.current;
+    if (isPausedRef.current && pauseStartRef.current) {
+      totalPausedMs += Date.now() - pauseStartRef.current;
+    }
+
     if (meetingData) {
-      const result = await MeetingService.endMeeting(meetingData.id);
+      const result = await MeetingService.endMeeting(meetingData.id, totalPausedMs);
 
       if (result.success) {
         Alert.alert(

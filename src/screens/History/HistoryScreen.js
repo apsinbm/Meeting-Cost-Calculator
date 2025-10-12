@@ -38,6 +38,7 @@ const HistoryScreen = () => {
       setSummary(summaryData);
     } catch (error) {
       console.error('Error loading history:', error);
+      Alert.alert('Error', 'Failed to load meeting history. Please try again.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -55,6 +56,11 @@ const HistoryScreen = () => {
     const result = await EmailService.sendReport(meetings, 'All Time');
     if (!result.success) {
       console.error('Failed to send report:', result.error);
+      Alert.alert(
+        'Email Error',
+        'Unable to open email. Please check that you have an email app configured on your device.',
+        [{ text: 'OK' }]
+      );
     }
   };
 

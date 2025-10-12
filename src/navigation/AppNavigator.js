@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import WelcomeScreen from '../screens/Onboarding/WelcomeScreen';
@@ -8,6 +8,7 @@ import EmployeeListScreen from '../screens/Employees/EmployeeListScreen';
 import EmployeeDetailScreen from '../screens/Employees/EmployeeDetailScreen';
 import ActiveMeetingScreen from '../screens/ActiveMeeting/ActiveMeetingScreen';
 import AboutCalculationsScreen from '../screens/Settings/AboutCalculationsScreen';
+import EmployeeService from '../services/EmployeeService';
 
 const Stack = createStackNavigator();
 
@@ -16,12 +17,35 @@ const Stack = createStackNavigator();
  * Root navigation structure with Welcome flow and Main app
  */
 const AppNavigator = () => {
-  // TODO: Check if user has completed onboarding
-  // For now, always show welcome screen first
+  const [initialRoute, setInitialRoute] = useState('Welcome');
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    checkOnboardingStatus();
+  }, []);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      // Check if user has at least one employee (indicates completed onboarding)
+      const employees = await EmployeeService.getEmployees();
+      if (employees.length > 0) {
+        setInitialRoute('Main');
+      }
+    } catch (error) {
+      console.error('Error checking onboarding:', error);
+    } finally {
+      setIsReady(true);
+    }
+  };
+
+  if (!isReady) {
+    return null; // Or a loading screen
+  }
 
   return (
     <NavigationContainer>
       <Stack.Navigator
+        initialRouteName={initialRoute}
         screenOptions={{
           headerShown: false,
         }}

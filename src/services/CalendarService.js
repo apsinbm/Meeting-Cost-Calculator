@@ -74,9 +74,9 @@ class CalendarService {
       const calendars = await this.getCalendars();
       if (calendars.length === 0) return [];
 
-      const calendarIds = calendars
-        .filter(cal => cal.allowsModifications || cal.type === 'caldav')
-        .map(cal => cal.id);
+      // Include all calendars we have access to (not just modifiable ones)
+      // Most work/corporate calendars are read-only but we still need to read events from them
+      const calendarIds = calendars.map(cal => cal.id);
 
       if (calendarIds.length === 0) return [];
 

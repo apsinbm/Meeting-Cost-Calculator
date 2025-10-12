@@ -27,9 +27,16 @@ const EmployeeDetailScreen = ({ route, navigation }) => {
         setEmployee(emp);
         const breakdown = EmployeeCostCalculator.calculateEmployeeCost(emp);
         setCostBreakdown(breakdown);
+      } else {
+        Alert.alert('Error', 'Employee not found.', [
+          { text: 'OK', onPress: () => navigation.goBack() }
+        ]);
       }
     } catch (error) {
       console.error('Error loading employee:', error);
+      Alert.alert('Error', 'Failed to load employee details. Please try again.', [
+        { text: 'OK', onPress: () => navigation.goBack() }
+      ]);
     } finally {
       setLoading(false);
     }

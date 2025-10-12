@@ -25,6 +25,7 @@ const EmployeeListScreen = ({ navigation }) => {
       setFilteredEmployees(data);
     } catch (error) {
       console.error('Error loading employees:', error);
+      Alert.alert('Error', 'Failed to load employees. Please try again.');
     } finally {
       setLoading(false);
     }

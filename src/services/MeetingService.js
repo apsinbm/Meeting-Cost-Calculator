@@ -155,8 +155,10 @@ class MeetingService {
 
   /**
    * End meeting tracking
+   * @param {string} id - Meeting ID
+   * @param {number} pausedTimeMs - Total paused time in milliseconds (default 0)
    */
-  async endMeeting(id) {
+  async endMeeting(id, pausedTimeMs = 0) {
     try {
       const meetings = await this.getMeetings();
       const index = meetings.findIndex(m => m.id === id);
@@ -171,10 +173,12 @@ class MeetingService {
       const meeting = meetings[index];
       const actualEnd = new Date().toISOString();
 
-      // Calculate actual duration
+      // Calculate actual duration (subtract paused time)
       const startTime = new Date(meeting.actualStart);
       const endTime = new Date(actualEnd);
-      const actualMinutes = Math.round((endTime - startTime) / (1000 * 60));
+      const wallClockMs = endTime - startTime;
+      const activeMs = wallClockMs - pausedTimeMs;
+      const actualMinutes = Math.round(activeMs / (1000 * 60));
 
       // Calculate final costs
       const scheduledMinutes = meeting.durationMinutes || 0;
@@ -188,11 +192,13 @@ class MeetingService {
         ...meeting,
         actualEnd,
         actualMinutes,
+        pausedTimeMs, // Store for reference/debugging
         status: 'completed',
         actualCost: finalCosts.actualCost,
         costDifference: finalCosts.costDifference,
         ranOver: finalCosts.ranOver,
         endedEarly: finalCosts.endedEarly,
+        minutesDifference: actualMinutes - scheduledMinutes,
         updatedAt: actualEnd,
       };
 
