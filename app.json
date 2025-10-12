@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "temp-init",
-    "slug": "temp-init",
+    "name": "Meeting Cost Calculator",
+    "slug": "meeting-cost-calculator",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,9 +13,19 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.meetingcostcalculator.app",
+      "infoPlist": {
+        "NSCalendarsUsageDescription": "This app reads your calendar to calculate meeting costs and match attendees to employee profiles.",
+        "NSRemindersUsageDescription": "This app needs access to reminders to track meeting schedules."
+      }
     },
     "android": {
+      "package": "com.meetingcostcalculator.app",
+      "permissions": [
+        "READ_CALENDAR",
+        "POST_NOTIFICATIONS"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -24,6 +34,21 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "The app needs to read your calendar to calculate meeting costs."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#2563EB"
+        }
+      ]
+    ]
   }
 }
