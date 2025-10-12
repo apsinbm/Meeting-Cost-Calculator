@@ -4,8 +4,12 @@ import { BermudaDefaults } from '../constants';
  * EmployeeCostCalculator
  * Calculates true cost to company including all Bermuda employment expenses
  *
- * Formula:
+ * Formula (2025-26 Bermuda rates):
  * Total Annual Cost = Salary + Bonus + (Health Insurance / 2) + Payroll Tax + Social Insurance
+ *
+ * Payroll Tax: 10% of total compensation, capped at $1M per employee
+ * Social Insurance: Fixed $37.65/week ($1,957.80/year) per employee - NOT percentage-based
+ *
  * Hourly Cost = Total Annual Cost / 2080 hours (40 hours/week * 52 weeks)
  * Per-Minute Cost = Hourly Cost / 60
  */
@@ -26,7 +30,8 @@ class EmployeeCostCalculator {
 
     // Get rates from settings or use defaults
     const payrollTaxRate = settings?.payrollTaxRate || BermudaDefaults.payrollTaxRate;
-    const socialInsuranceRate = settings?.socialInsuranceRate || BermudaDefaults.socialInsuranceRate;
+    const payrollTaxCap = settings?.payrollTaxCap || BermudaDefaults.payrollTaxCap;
+    const socialInsuranceAnnual = settings?.socialInsuranceAnnual || BermudaDefaults.socialInsuranceAnnual;
     const standardHealthInsurance = settings?.standardHealthInsurance || BermudaDefaults.standardHealthInsurance;
 
     // Step 1: Total Annual Compensation
@@ -37,11 +42,13 @@ class EmployeeCostCalculator {
       ? standardHealthInsurance / 2
       : 0;
 
-    // Step 3: Payroll Tax (calculated on total compensation)
-    const payrollTax = totalCompensation * (payrollTaxRate / 100);
+    // Step 3: Payroll Tax (10% of total compensation, capped at $1M per employee)
+    const taxableCompensation = Math.min(totalCompensation, payrollTaxCap);
+    const payrollTax = taxableCompensation * (payrollTaxRate / 100);
 
-    // Step 4: Social Insurance (calculated on base salary)
-    const socialInsurance = this._safeNumber(annualSalary) * (socialInsuranceRate / 100);
+    // Step 4: Social Insurance (fixed $37.65/week = $1,957.80/year per employee)
+    // This is NOT percentage-based - it's a flat contribution under Contributory Pensions Act 1970
+    const socialInsurance = socialInsuranceAnnual;
 
     // Step 5: Total Annual Cost to Company
     const totalAnnualCost = totalCompensation + healthInsuranceCompanyPortion + payrollTax + socialInsurance;
@@ -58,6 +65,7 @@ class EmployeeCostCalculator {
       annualBonus: this._round2(annualBonus),
       totalCompensation: this._round2(totalCompensation),
       healthInsuranceCompanyPortion: this._round2(healthInsuranceCompanyPortion),
+      taxableCompensation: this._round2(taxableCompensation),
       payrollTax: this._round2(payrollTax),
       socialInsurance: this._round2(socialInsurance),
 
@@ -66,9 +74,10 @@ class EmployeeCostCalculator {
       hourlyCost: this._round2(hourlyCost),
       perMinuteCost: this._round3(perMinuteCost),
 
-      // Rates used
+      // Rates/values used
       payrollTaxRate,
-      socialInsuranceRate,
+      payrollTaxCap,
+      socialInsuranceAnnual,
       standardHealthInsurance,
     };
   }

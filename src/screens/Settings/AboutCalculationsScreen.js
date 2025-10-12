@@ -37,8 +37,8 @@ const AboutCalculationsScreen = ({ navigation }) => {
               <BulletPoint text="Base annual salary" />
               <BulletPoint text="Annual bonus (if applicable)" />
               <BulletPoint text="Company's portion of health insurance (50% of standard $12,000)" />
-              <BulletPoint text="Simplified payroll tax (10% of total compensation)" />
-              <BulletPoint text="Simplified social insurance (5% of base salary)" />
+              <BulletPoint text="Payroll tax (10% of total compensation, capped at $1M per employee)" />
+              <BulletPoint text="Social insurance ($37.65/week = $1,957.80/year per employee)" />
             </View>
           </Card>
         </View>
@@ -73,10 +73,10 @@ const AboutCalculationsScreen = ({ navigation }) => {
               Bermuda imposes a Payroll Tax on employers based on total remuneration. The employer is responsible for the full amount, though may deduct the employee's portion from wages.
             </AppText>
             <AppText variant="bodySmall" style={[styles.paragraph, { fontWeight: '600' }]}>
-              Note: This app uses a simplified 10% rate. Actual rates are graduated based on your company's total annual payroll.
+              This app uses the 10% rate for companies with total payroll over $1M (2025-26 rate). Your organization's rate may differ based on total company payroll.
             </AppText>
             <AppText variant="bodySmall" style={styles.paragraph}>
-              Actual employer rates for 1 April 2025 – 31 March 2026:
+              Graduated employer rates for 1 April 2025 – 31 March 2026:
             </AppText>
             <View style={styles.bulletList}>
               <BulletPoint text="Annual payroll < $200,000 → 1.00%" small />
@@ -100,10 +100,10 @@ const AboutCalculationsScreen = ({ navigation }) => {
           </AppText>
           <Card>
             <AppText variant="body" style={styles.paragraph}>
-              Bermuda uses a fixed weekly contribution (not percentage-based) split equally between employer and employee for standard employees under age 65.
+              Bermuda social insurance uses a fixed weekly contribution (NOT percentage-based) under the Contributory Pensions Act 1970. This is split equally between employer and employee for standard employees under age 65.
             </AppText>
             <AppText variant="bodySmall" style={[styles.paragraph, { fontWeight: '600' }]}>
-              Note: This app uses a simplified 5% of base salary. The actual cost is a fixed weekly amount.
+              This app uses the actual fixed cost of $37.65/week per employee (August 2025 rate).
             </AppText>
             <AppText variant="bodySmall" style={styles.paragraph}>
               Actual rates (as of August 2025):

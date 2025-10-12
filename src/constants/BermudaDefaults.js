@@ -2,9 +2,14 @@
 // These values are configurable in Settings but provide sensible defaults
 
 export const BermudaDefaults = {
-  // Tax Rates (as percentages)
-  payrollTaxRate: 10,         // 10% - typical Bermuda payroll tax
-  socialInsuranceRate: 5,     // 5% - typical social insurance contribution
+  // Tax Rates
+  payrollTaxRate: 10,         // 10% - for companies with payroll over $1M (2025-26 rate)
+  payrollTaxCap: 1000000,     // $1M cap per employee for payroll tax calculation
+
+  // Social Insurance (Contributory Pensions Act 1970)
+  // Fixed weekly contribution, NOT percentage-based
+  socialInsuranceWeekly: 37.65,    // $37.65/week employer portion (as of August 1, 2025)
+  socialInsuranceAnnual: 1957.80,  // $37.65 × 52 weeks = $1,957.80/year per employee
 
   // Benefits
   standardHealthInsurance: 12000,  // $12,000 annual - company pays half ($6,000)
@@ -52,6 +57,10 @@ export const ValidationRules = {
   taxRate: {
     min: 0,
     max: 100,
+  },
+  socialInsuranceWeekly: {
+    min: 0,
+    max: 500,
   },
   meetingDuration: {
     min: 1,              // 1 minute minimum
