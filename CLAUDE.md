@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Meeting Cost Calculator is a React Native/Expo mobile application (iOS/Android) that calculates and displays real-time costs of meetings based on comprehensive employee compensation including salary, bonuses, and Bermuda employment costs (payroll tax, social insurance, health insurance). The app integrates with device calendars, tracks active meetings with milestone notifications, pre-calculates costs for scheduled meetings, and generates detailed cost reports.
+Meeting Cost Calculator is a React Native/Expo mobile application (iOS/Android) that calculates and displays real-time costs of meetings based on comprehensive employee compensation including salary, bonuses, and Bermuda employment costs (payroll tax, social insurance, health insurance). The app integrates with device calendars, tracks active meetings with milestone notifications, pre-calculates costs for scheduled meetings, predicts costs before scheduling, generates detailed cost reports, and supports multiple currencies with customizable company settings.
 
 **Core Principle**: Calculate true employee meeting costs accurately and create psychological pressure for shorter, more efficient meetings through prominent cost display.
 
@@ -46,6 +46,7 @@ npx expo doctor        # Check for configuration issues
   - `MeetingCostCalculator`: Calculates meeting costs using employee costs and duration
   - `EmployeeService`: Manages employee profiles and compensation data
   - `MeetingService`: Manages meeting records, tracking, and history
+  - `CompanyService`: Manages company settings (name, currency, work week hours)
   - `StorageService`: Handles AsyncStorage for sensitive data
   - `EmailService`: Formats and sends meeting reports via native email
   - `ValidationService`: Validates all user inputs
@@ -64,11 +65,14 @@ src/
 │   ├── Onboarding/    # Welcome screen with first-time user flow
 │   ├── Today/         # Calendar meetings with manual start option
 │   ├── ActiveMeeting/ # Real-time cost tracking with prominent display
+│   ├── MeetingPredictor/ # Predict meeting costs before scheduling
 │   ├── History/       # Past meetings with edit/delete capabilities
 │   ├── Employees/     # Single-screen employee management
 │   └── Settings/      # App configuration and calculation details
 ├── components/        # Reusable UI components
 │   ├── AttendeePickerModal.js  # Employee selection with add capability
+│   ├── CurrencyPickerModal.js  # Currency selection modal
+│   ├── EditTextModal.js        # Reusable text editing modal
 │   ├── Button.js      # Primary UI component
 │   ├── Card.js        # Container component
 │   ├── Input.js       # Form input with validation
@@ -430,10 +434,19 @@ During active meetings:
 - Actual vs simplified Bermuda rates documented
 - Settings showing employee count
 
+**Phase 8: Company Settings & Predictions**
+- Editable company settings (name, currency, work week hours)
+- Multi-currency support (BMD, USD, EUR, GBP, CAD, AUD, JPY, CHF)
+- CurrencyPickerModal component
+- EditTextModal component for text editing
+- CompanyService for managing company settings
+- Meeting Cost Predictor screen
+- Pre-meeting cost calculation with duration options
+
 ### 🚧 Pending Enhancements
 
 **Settings Management**
-- Make company settings editable (name, currency)
+- ✅ Make company settings editable (name, currency, work week hours) - COMPLETED
 - Implement graduated payroll tax calculation
 - Per-employee work hours (currently company-wide)
 

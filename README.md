@@ -7,9 +7,12 @@ A mobile application for iOS and Android that calculates and displays the real-t
 - **True Cost Calculation**: Includes salary, bonuses, health insurance, payroll tax, and social insurance
 - **Calendar Integration**: Automatically reads scheduled meetings and matches attendees
 - **Real-Time Tracking**: Per-second cost updates during active meetings
+- **Meeting Cost Predictor**: Calculate predicted costs before scheduling meetings
 - **Milestone Notifications**: Alerts at 15-minute intervals (15, 30, 45, 60+ min)
 - **Pre-Calculation**: Shows meeting costs before they start
 - **Detailed Reports**: Generate comprehensive cost analysis via email
+- **Editable Company Settings**: Customize company name, currency, and work week hours
+- **Multi-Currency Support**: Support for BMD, USD, EUR, GBP, CAD, AUD, JPY, CHF
 - **Privacy First**: All data stored locally, no cloud sync
 
 ## Quick Start

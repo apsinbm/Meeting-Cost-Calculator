@@ -131,12 +131,11 @@ const EmployeeListScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Button
-          title="‹ Back"
-          variant="secondary"
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <AppText variant="body" color={Colors.primary}>
+            ‹ Back
+          </AppText>
+        </TouchableOpacity>
         <AppText variant="h2">Employees</AppText>
         <AppText variant="bodySmall" color={Colors.textSecondary}>
           {employees.length} {employees.length === 1 ? 'employee' : 'employees'}
@@ -201,8 +200,9 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   backButton: {
-    width: 80,
+    paddingVertical: Spacing.xs,
     marginBottom: Spacing.sm,
+    alignSelf: 'flex-start',
   },
   searchContainer: {
     paddingHorizontal: Spacing.md,

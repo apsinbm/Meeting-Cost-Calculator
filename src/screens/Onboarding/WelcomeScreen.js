@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, AppText } from '../../components';
 import { Colors, Spacing } from '../../constants';
-import EmployeeService from '../../services/EmployeeService';
 
 /**
  * Welcome Screen
@@ -15,25 +14,10 @@ const WelcomeScreen = ({ navigation }) => {
   const handleContinue = async () => {
     try {
       setLoading(true);
-
-      // Check if user has any employees
-      const employees = await EmployeeService.getEmployees();
-
-      if (employees.length === 0) {
-        // First-time user - guide them to add their first employee
-        navigation.navigate('AddEmployee', {
-          isFirstEmployee: true,
-          onEmployeeAdded: () => {
-            // After adding first employee, go to main app
-            navigation.navigate('Main');
-          },
-        });
-      } else {
-        // User has employees, go to main app
-        navigation.navigate('Main');
-      }
+      // Go directly to main app - let the Today screen handle employee creation
+      navigation.navigate('Main');
     } catch (error) {
-      console.error('Error checking employees:', error);
+      console.error('Error navigating:', error);
       // On error, just go to main app
       navigation.navigate('Main');
     } finally {
@@ -51,31 +35,31 @@ const WelcomeScreen = ({ navigation }) => {
 
         {/* Headline */}
         <AppText variant="h1" style={styles.headline}>
-          Know The True Cost of Meetings
+          Track What Meetings Really Cost
         </AppText>
 
         {/* Subheadline */}
         <AppText variant="body" color={Colors.textSecondary} style={styles.subheadline}>
-          Comprehensive employee cost tracking including salary, bonuses, and Bermuda employment expenses
+          Calculate real-time costs including salary, bonuses, and Bermuda employment expenses
         </AppText>
 
         {/* Benefits */}
         <View style={styles.benefitsContainer}>
+          <BenefitItem text="Start tracking meetings immediately" />
           <BenefitItem text="Complete privacy - data never leaves device" />
-          <BenefitItem text="Accurate cost calculations with true employment costs" />
-          <BenefitItem text="Pre-calculate and track meetings in real-time" />
+          <BenefitItem text="Accurate costs with true employment expenses" />
         </View>
       </View>
 
       {/* Continue Button */}
       <View style={styles.footer}>
         <Button
-          title="Get Started"
+          title="Start Tracking"
           onPress={handleContinue}
           loading={loading}
         />
         <AppText variant="caption" color={Colors.textSecondary} style={styles.footerHint}>
-          Next: Add your first employee
+          Add employees, then start your first meeting
         </AppText>
       </View>
     </SafeAreaView>

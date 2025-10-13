@@ -118,7 +118,10 @@ const TodayScreen = ({ navigation }) => {
   };
 
   const handleStartManualMeeting = () => {
+    console.log('Start Meeting button pressed', { employeeCount: employees.length });
+
     if (employees.length === 0) {
+      console.log('No employees found, showing alert');
       Alert.alert(
         'No Employees',
         'Add employees first to track meeting costs.',
@@ -130,11 +133,17 @@ const TodayScreen = ({ navigation }) => {
       return;
     }
 
+    console.log('Opening attendee picker modal');
     setIsStartingManualMeeting(true);
     setModalVisible(true);
   };
 
   const handleConfirmAttendees = (selectedEmployees) => {
+    console.log('Confirm attendees called', {
+      isStartingManualMeeting,
+      selectedEmployeesCount: selectedEmployees.length
+    });
+
     if (isStartingManualMeeting) {
       // Starting a new manual meeting
       const manualMeeting = {
@@ -143,6 +152,7 @@ const TodayScreen = ({ navigation }) => {
         isManual: true,
       };
 
+      console.log('Starting manual meeting, navigating to ActiveMeeting');
       setModalVisible(false);
       setIsStartingManualMeeting(false);
       setSelectedMeeting(null);
@@ -344,16 +354,23 @@ const TodayScreen = ({ navigation }) => {
         <View style={styles.permissionContainer}>
           <View style={styles.emptyIcon} />
           <AppText variant="h3" style={styles.permissionTitle}>
-            Calendar Access Required
+            Calendar Access
           </AppText>
           <AppText variant="body" color={Colors.textSecondary} style={styles.permissionText}>
-            We read your calendar to calculate meeting costs and match attendees to employee profiles.
+            Grant calendar access to see scheduled meetings and pre-calculate costs, or skip to start manual meetings.
           </AppText>
-          <Button
-            title="Grant Access"
-            onPress={handleRequestPermission}
-            style={{ marginTop: Spacing.lg }}
-          />
+          <View style={{ width: '100%', marginTop: Spacing.lg }}>
+            <Button
+              title="Grant Calendar Access"
+              onPress={handleRequestPermission}
+            />
+            <Button
+              title="Skip - Use Manual Meetings Only"
+              variant="secondary"
+              onPress={() => setHasPermission(true)}
+              style={{ marginTop: Spacing.md }}
+            />
+          </View>
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.md, textAlign: 'center' }}>
             Your data never leaves this device
           </AppText>
@@ -376,18 +393,21 @@ const TodayScreen = ({ navigation }) => {
                     No meetings today
                   </AppText>
                   <AppText variant="body" color={Colors.textSecondary} style={styles.emptyText}>
-                    Your calendar is clear
-                  </AppText>
-                  <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.emptyHint}>
-                    Use this time for focused work
+                    {meetings.length === 0 ? 'Start a manual meeting to track costs' : 'Your calendar is clear'}
                   </AppText>
                 </View>
               )
             }
           />
-          {/* Floating Start Button */}
+          {/* Floating Action Buttons */}
           {employees.length > 0 && (
             <View style={styles.floatingButtonContainer}>
+              <Button
+                title="Calculate Cost"
+                variant="secondary"
+                onPress={() => navigation.navigate('MeetingPredictor')}
+                style={{ marginBottom: Spacing.sm }}
+              />
               <Button
                 title="Start Meeting"
                 onPress={handleStartManualMeeting}

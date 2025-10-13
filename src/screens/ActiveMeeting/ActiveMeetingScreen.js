@@ -297,11 +297,11 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.xl,
   },
   title: {
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   pausedBanner: {
     backgroundColor: Colors.warning,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   },
   costContainer: {
     alignItems: 'center',
-    marginTop: Spacing.md,
+    marginTop: Spacing.lg,
     marginBottom: Spacing.xl,
     paddingVertical: Spacing.md,
   },
@@ -337,6 +337,7 @@ const styles = StyleSheet.create({
   },
   timeContainer: {
     alignItems: 'center',
+    marginTop: Spacing.md,
     marginBottom: Spacing.xl,
   },
   timeDisplay: {

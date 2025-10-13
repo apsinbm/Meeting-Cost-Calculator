@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AppText, Card, Button } from '../../components';
+import { AppText, Card } from '../../components';
 import { Colors, Spacing } from '../../constants';
 
 /**
@@ -13,12 +13,11 @@ const AboutCalculationsScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Button
-          title="‹ Back"
-          variant="secondary"
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <AppText variant="body" color={Colors.primary}>
+            ‹ Back
+          </AppText>
+        </TouchableOpacity>
         <AppText variant="h2">About Our Calculations</AppText>
       </View>
 
@@ -41,6 +40,9 @@ const AboutCalculationsScreen = ({ navigation }) => {
               <BulletPoint text="Employer pension match (5% of annual salary)" />
               <BulletPoint text="Social insurance ($37.65/week = $1,957.80/year per employee)" />
             </View>
+            <AppText variant="caption" color={Colors.textSecondary} style={styles.paragraph}>
+              Note: The 5% employer pension match is required under the Occupational Pensions Act. This matches the employee's 5% contribution for a total 10% pension contribution.
+            </AppText>
           </Card>
         </View>
 
@@ -219,8 +221,9 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   backButton: {
-    width: 80,
+    paddingVertical: Spacing.xs,
     marginBottom: Spacing.sm,
+    alignSelf: 'flex-start',
   },
   content: {
     flex: 1,

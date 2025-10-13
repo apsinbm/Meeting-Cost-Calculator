@@ -2,9 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
-import { AppText, Card } from '../../components';
+import { AppText, Card, EditTextModal, CurrencyPickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
 import EmployeeService from '../../services/EmployeeService';
+import CompanyService from '../../services/CompanyService';
 
 /**
  * Settings Screen
@@ -12,10 +13,15 @@ import EmployeeService from '../../services/EmployeeService';
  */
 const SettingsScreen = ({ navigation }) => {
   const [employeeCount, setEmployeeCount] = useState(0);
+  const [companySettings, setCompanySettings] = useState(null);
+  const [editNameModalVisible, setEditNameModalVisible] = useState(false);
+  const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
+  const [editWorkHoursModalVisible, setEditWorkHoursModalVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       loadEmployeeCount();
+      loadCompanySettings();
     }, [])
   );
 
@@ -28,8 +34,80 @@ const SettingsScreen = ({ navigation }) => {
     }
   };
 
+  const loadCompanySettings = async () => {
+    try {
+      const settings = await CompanyService.getSettings();
+      setCompanySettings(settings);
+    } catch (error) {
+      console.error('Error loading company settings:', error);
+    }
+  };
+
+  const handleSaveCompanyName = async (name) => {
+    const result = await CompanyService.updateCompanyName(name);
+    if (result.success) {
+      setCompanySettings(result.settings);
+    }
+    setEditNameModalVisible(false);
+  };
+
+  const handleSaveCurrency = async (currencyCode) => {
+    const result = await CompanyService.updateCurrency(currencyCode);
+    if (result.success) {
+      setCompanySettings(result.settings);
+    }
+    setCurrencyModalVisible(false);
+  };
+
+  const handleSaveWorkHours = async (hoursStr) => {
+    const hours = parseFloat(hoursStr);
+    if (isNaN(hours) || hours <= 0 || hours > 168) {
+      return 'Please enter a valid number of hours (1-168)';
+    }
+    const result = await CompanyService.updateWorkWeekHours(hours);
+    if (result.success) {
+      setCompanySettings(result.settings);
+    }
+    setEditWorkHoursModalVisible(false);
+  };
+
+  if (!companySettings) {
+    return null; // Loading
+  }
+
+  const currencyInfo = CompanyService.getCurrency(companySettings.currency);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      {/* Modals */}
+      <EditTextModal
+        visible={editNameModalVisible}
+        title="Company Name"
+        label="Enter your company name"
+        value={companySettings.companyName}
+        placeholder="Acme Corporation"
+        onConfirm={handleSaveCompanyName}
+        onCancel={() => setEditNameModalVisible(false)}
+      />
+
+      <CurrencyPickerModal
+        visible={currencyModalVisible}
+        selectedCurrency={companySettings.currency}
+        onConfirm={handleSaveCurrency}
+        onCancel={() => setCurrencyModalVisible(false)}
+      />
+
+      <EditTextModal
+        visible={editWorkHoursModalVisible}
+        title="Work Week Hours"
+        label="Enter weekly work hours"
+        value={companySettings.workWeekHours.toString()}
+        placeholder="40"
+        onConfirm={handleSaveWorkHours}
+        onCancel={() => setEditWorkHoursModalVisible(false)}
+        validation={handleSaveWorkHours}
+      />
+
       {/* Header */}
       <View style={styles.header}>
         <AppText variant="h2">Settings</AppText>
@@ -44,18 +122,18 @@ const SettingsScreen = ({ navigation }) => {
           </AppText>
           <SettingsItem
             title="Company Name"
-            value="Not set"
-            onPress={() => {}}
+            value={companySettings.companyName || 'Not set'}
+            onPress={() => setEditNameModalVisible(true)}
           />
           <SettingsItem
             title="Currency"
-            value="BMD (Bermuda Dollar)"
-            onPress={() => {}}
+            value={currencyInfo.name}
+            onPress={() => setCurrencyModalVisible(true)}
           />
           <SettingsItem
             title="Work Week Hours"
-            value="40 hours"
-            onPress={() => {}}
+            value={`${companySettings.workWeekHours} hours`}
+            onPress={() => setEditWorkHoursModalVisible(true)}
           />
         </View>
 
@@ -68,16 +146,25 @@ const SettingsScreen = ({ navigation }) => {
             title="Payroll Tax Rate"
             value="10%"
             onPress={() => {}}
+            disabled
           />
           <SettingsItem
-            title="Social Insurance Rate"
-            value="5%"
+            title="Employer Pension Match"
+            value="5% of annual salary"
             onPress={() => {}}
+            disabled
           />
           <SettingsItem
-            title="Standard Health Insurance"
-            value="$12,000/year"
+            title="Social Insurance"
+            value="$37.65/week ($1,957.80/year)"
             onPress={() => {}}
+            disabled
+          />
+          <SettingsItem
+            title="Health Insurance"
+            value="$500/month ($6,000/year)"
+            onPress={() => {}}
+            disabled
           />
         </View>
 
@@ -111,18 +198,20 @@ const SettingsScreen = ({ navigation }) => {
   );
 };
 
-const SettingsItem = ({ title, value, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
+const SettingsItem = ({ title, value, onPress, disabled = false }) => (
+  <TouchableOpacity onPress={disabled ? undefined : onPress} disabled={disabled} activeOpacity={disabled ? 1 : 0.7}>
     <Card style={styles.settingsItem}>
       <View style={styles.settingsItemContent}>
-        <AppText variant="body">{title}</AppText>
+        <AppText variant="body" color={disabled ? Colors.textSecondary : Colors.textPrimary}>{title}</AppText>
         <View style={styles.settingsItemValue}>
           <AppText variant="body" color={Colors.textSecondary}>
             {value}
           </AppText>
-          <AppText variant="body" color={Colors.textSecondary}>
-            {' ›'}
-          </AppText>
+          {!disabled && (
+            <AppText variant="body" color={Colors.textSecondary}>
+              {' ›'}
+            </AppText>
+          )}
         </View>
       </View>
     </Card>

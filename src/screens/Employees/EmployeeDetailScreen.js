@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Card, Button } from '../../components';
 import { Colors, Spacing } from '../../constants';
@@ -74,12 +74,11 @@ const EmployeeDetailScreen = ({ route, navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <Button
-          title="‹ Back"
-          variant="secondary"
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        />
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <AppText variant="body" color={Colors.primary}>
+            ‹ Back
+          </AppText>
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content}>
@@ -226,7 +225,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   backButton: {
-    width: 80,
+    paddingVertical: Spacing.xs,
+    alignSelf: 'flex-start',
   },
   content: {
     flex: 1,

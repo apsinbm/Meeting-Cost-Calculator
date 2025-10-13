@@ -8,6 +8,7 @@ import EmployeeListScreen from '../screens/Employees/EmployeeListScreen';
 import EmployeeDetailScreen from '../screens/Employees/EmployeeDetailScreen';
 import ActiveMeetingScreen from '../screens/ActiveMeeting/ActiveMeetingScreen';
 import AboutCalculationsScreen from '../screens/Settings/AboutCalculationsScreen';
+import MeetingPredictorScreen from '../screens/MeetingPredictor/MeetingPredictorScreen';
 import EmployeeService from '../services/EmployeeService';
 
 const Stack = createStackNavigator();
@@ -57,6 +58,7 @@ const AppNavigator = () => {
         <Stack.Screen name="EmployeeDetail" component={EmployeeDetailScreen} />
         <Stack.Screen name="ActiveMeeting" component={ActiveMeetingScreen} />
         <Stack.Screen name="AboutCalculations" component={AboutCalculationsScreen} />
+        <Stack.Screen name="MeetingPredictor" component={MeetingPredictorScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

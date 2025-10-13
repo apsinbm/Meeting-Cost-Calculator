@@ -119,6 +119,32 @@ class StorageService {
   }
 
   /**
+   * Generic save data method
+   */
+  async saveData(key, data) {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(data));
+      return true;
+    } catch (error) {
+      console.error(`Error saving data for key ${key}:`, error);
+      throw new Error(`Failed to save data for key ${key}`);
+    }
+  }
+
+  /**
+   * Generic get data method
+   */
+  async getData(key) {
+    try {
+      const data = await AsyncStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error(`Error getting data for key ${key}:`, error);
+      return null;
+    }
+  }
+
+  /**
    * Clear all data (for testing/reset)
    */
   async clearAll() {

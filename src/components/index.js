@@ -5,3 +5,5 @@ export { default as Card } from './Card';
 export { default as Input } from './Input';
 export { default as AppText } from './AppText';
 export { default as AttendeePickerModal } from './AttendeePickerModal';
+export { default as EditTextModal } from './EditTextModal';
+export { default as CurrencyPickerModal } from './CurrencyPickerModal';
