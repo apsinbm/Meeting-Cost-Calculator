@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   Pressable,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AppText from './AppText';
@@ -26,10 +27,12 @@ const AttendeePickerModal = ({
   onAddEmployee,
 }) => {
   const [selected, setSelected] = useState([]);
+  const flashAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
       setSelected(selectedEmployees.map(emp => emp.id));
+      flashAnim.setValue(0); // Reset animation
     }
   }, [visible, selectedEmployees]);
 
@@ -44,8 +47,23 @@ const AttendeePickerModal = ({
   };
 
   const handleConfirm = () => {
-    const selectedEmps = employees.filter(emp => selected.includes(emp.id));
-    onConfirm(selectedEmps);
+    // Trigger red flash animation
+    Animated.sequence([
+      Animated.timing(flashAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: false,
+      }),
+      Animated.timing(flashAnim, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: false,
+      }),
+    ]).start(() => {
+      // Call onConfirm after animation completes
+      const selectedEmps = employees.filter(emp => selected.includes(emp.id));
+      onConfirm(selectedEmps);
+    });
   };
 
   const renderEmployee = ({ item }) => {
@@ -134,12 +152,23 @@ const AttendeePickerModal = ({
                 onPress={onCancel}
                 style={{ flex: 1, marginRight: Spacing.sm }}
               />
-              <Button
-                title="Confirm"
-                onPress={handleConfirm}
-                style={{ flex: 1 }}
-                disabled={selected.length === 0}
-              />
+              <Animated.View style={[
+                { flex: 1 },
+                {
+                  backgroundColor: flashAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [Colors.primary, Colors.error]
+                  }),
+                  borderRadius: 8,
+                }
+              ]}>
+                <Button
+                  title="Start"
+                  onPress={handleConfirm}
+                  style={{ flex: 1, backgroundColor: 'transparent' }}
+                  disabled={selected.length === 0}
+                />
+              </Animated.View>
             </View>
           </SafeAreaView>
         </Pressable>

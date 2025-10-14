@@ -2,7 +2,7 @@
   "expo": {
     "name": "Meeting Cost Calculator",
     "slug": "meeting-cost-calculator",
-    "version": "1.0.0",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,8 +15,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.meetingcostcalculator.app",
       "infoPlist": {
-        "NSCalendarsUsageDescription": "This app reads your calendar to calculate meeting costs and match attendees to employee profiles.",
-        "NSRemindersUsageDescription": "This app needs access to reminders to track meeting schedules."
+        "NSCalendarsUsageDescription": "Meeting Cost Calculator reads your calendar to display scheduled meetings, match attendees to employee profiles, and pre-calculate meeting costs. Your calendar data never leaves your device.",
+        "NSRemindersUsageDescription": "This app needs access to reminders to track meeting schedules. Your data never leaves your device.",
+        "LSApplicationQueriesSchemes": ["mailto"]
       }
     },
     "android": {
@@ -38,7 +39,7 @@
       [
         "expo-calendar",
         {
-          "calendarPermission": "The app needs to read your calendar to calculate meeting costs."
+          "calendarPermission": "Meeting Cost Calculator reads your calendar to display scheduled meetings, match attendees to employee profiles, and pre-calculate meeting costs. Your calendar data never leaves your device."
         }
       ],
       [

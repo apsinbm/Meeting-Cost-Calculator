@@ -89,11 +89,6 @@ const MeetingPredictorScreen = ({ navigation }) => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <AppText variant="body" color={Colors.primary}>
-            ‹ Back
-          </AppText>
-        </TouchableOpacity>
         <AppText variant="h2">Meeting Cost Calculator</AppText>
         <AppText variant="bodySmall" color={Colors.textSecondary}>
           Plan smarter meetings
@@ -277,11 +272,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  backButton: {
-    paddingVertical: Spacing.xs,
-    marginBottom: Spacing.sm,
-    alignSelf: 'flex-start',
-  },
   content: {
     flex: 1,
     paddingHorizontal: Spacing.md,
@@ -331,6 +321,7 @@ const styles = StyleSheet.create({
   totalCost: {
     fontSize: 48,
     fontWeight: '700',
+    lineHeight: 58,
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },

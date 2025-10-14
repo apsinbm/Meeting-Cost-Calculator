@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, Alert, Animated, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { AppText, Card, Input, Button } from '../../components';
 import { Colors, Spacing } from '../../constants';
 import EmployeeService from '../../services/EmployeeService';
@@ -56,12 +57,18 @@ const EmployeeListScreen = ({ navigation }) => {
     setFilteredEmployees(filtered);
   };
 
-  const handleDelete = (employee) => {
+  const handleDelete = (employee, swipeableRef) => {
     Alert.alert(
       'Delete Employee',
       `Are you sure you want to delete ${employee.name}? This cannot be undone.`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+          onPress: () => {
+            swipeableRef?.close();
+          }
+        },
         {
           text: 'Delete',
           style: 'destructive',
@@ -76,43 +83,77 @@ const EmployeeListScreen = ({ navigation }) => {
     );
   };
 
-  const renderEmployee = ({ item }) => (
-    <Card
-      onPress={() => navigation.navigate('EmployeeDetail', { employeeId: item.id })}
-      style={styles.employeeCard}
-    >
-      <View style={styles.employeeHeader}>
-        <View style={styles.employeeAvatar}>
-          <AppText variant="h3" color={Colors.primary}>
-            {item.name.charAt(0).toUpperCase()}
+  const renderRightActions = (progress, dragX, item) => {
+    const scale = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item, null)}
+      >
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <AppText variant="body" style={{ color: Colors.background, fontWeight: '600' }}>
+            Delete
           </AppText>
-        </View>
-        <View style={styles.employeeInfo}>
-          <AppText variant="body" style={styles.employeeName}>
-            {item.name}
-          </AppText>
-          <AppText variant="bodySmall" color={Colors.textSecondary}>
-            {item.role}
-          </AppText>
-          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs }}>
-            {item.email}
-          </AppText>
-        </View>
-      </View>
-      <View style={styles.employeeCost}>
-        <AppText variant="bodyLarge" color={Colors.primary}>
-          {EmployeeCostCalculator.formatPerMinuteCost(item.perMinuteCost)}
-        </AppText>
-        <AppText variant="caption" color={Colors.textSecondary}>
-          {EmployeeCostCalculator.formatHourlyCost(item.hourlyCost)}
-        </AppText>
-      </View>
-    </Card>
-  );
+        </Animated.View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderEmployee = ({ item }) => {
+    return (
+      <Swipeable
+        renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item)}
+        overshootRight={false}
+      >
+        <Card
+          onPress={() => navigation.navigate('EmployeeDetail', { employeeId: item.id })}
+          style={styles.employeeCard}
+        >
+          <View style={styles.employeeHeader}>
+            <View style={styles.employeeAvatar}>
+              <AppText variant="h3" color={Colors.primary}>
+                {item.name.charAt(0).toUpperCase()}
+              </AppText>
+            </View>
+            <View style={styles.employeeInfo}>
+              <AppText variant="body" style={styles.employeeName}>
+                {item.name}
+              </AppText>
+              <AppText variant="bodySmall" color={Colors.textSecondary}>
+                {item.role}
+              </AppText>
+              <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs }}>
+                {item.email}
+              </AppText>
+            </View>
+          </View>
+          <View style={styles.employeeCost}>
+            <AppText variant="bodyLarge" color={Colors.primary}>
+              {EmployeeCostCalculator.formatPerMinuteCost(item.perMinuteCost)}
+            </AppText>
+            <AppText variant="caption" color={Colors.textSecondary}>
+              {EmployeeCostCalculator.formatHourlyCost(item.hourlyCost)}
+            </AppText>
+          </View>
+        </Card>
+      </Swipeable>
+    );
+  };
 
   const renderEmpty = () => (
     <View style={styles.emptyState}>
-      <View style={styles.emptyIcon} />
+      <View style={styles.emptyIconContainer}>
+        <Image
+          source={require('../../../assets/employee-empty-state.png')}
+          style={styles.emptyIconImage}
+          resizeMode="contain"
+        />
+      </View>
       <AppText variant="h3" style={styles.emptyTitle}>
         No employees yet
       </AppText>
@@ -124,6 +165,9 @@ const EmployeeListScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('AddEmployee', { onEmployeeAdded: loadEmployees })}
         style={{ marginTop: Spacing.lg }}
       />
+      <AppText variant="body" color={Colors.textSecondary} style={styles.emptyQuote}>
+        Smaller meetings = clearer ownership, faster decisions, and less wasted time.
+      </AppText>
     </View>
   );
 
@@ -132,7 +176,7 @@ const EmployeeListScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <AppText variant="body" color={Colors.primary}>
+          <AppText variant="body" color={Colors.primary} style={styles.backButtonText}>
             ‹ Back
           </AppText>
         </TouchableOpacity>
@@ -200,9 +244,13 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   backButton: {
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
     marginBottom: Spacing.sm,
     alignSelf: 'flex-start',
+    marginLeft: -Spacing.xs,
+  },
+  backButtonText: {
+    fontSize: 17,
   },
   searchContainer: {
     paddingHorizontal: Spacing.md,
@@ -257,12 +305,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.xxxl,
   },
-  emptyIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.gray200,
+  emptyIconContainer: {
+    width: 180,
+    height: 180,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: Spacing.lg,
+  },
+  emptyIconImage: {
+    width: 180,
+    height: 180,
+  },
+  emptyIconText: {
+    fontSize: 48,
   },
   emptyTitle: {
     marginBottom: Spacing.sm,
@@ -270,6 +325,23 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
+  },
+  emptyQuote: {
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    fontSize: 16,
+    lineHeight: 22,
+  },
+  deleteButton: {
+    backgroundColor: Colors.error,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 100,
+    marginLeft: Spacing.xs,
+    marginBottom: Spacing.xs,
+    borderRadius: 12,
   },
 });
 

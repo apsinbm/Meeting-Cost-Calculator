@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Card } from '../../components';
 import { Colors, Spacing, FontSizes } from '../../constants';
@@ -17,6 +17,7 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [meetingData, setMeetingData] = useState(null);
+  const [showEndDialog, setShowEndDialog] = useState(false);
   const timerRef = useRef(null);
   const isPausedRef = useRef(false);
   const startTimeRef = useRef(Date.now());
@@ -93,29 +94,7 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
       const result = await MeetingService.endMeeting(meetingData.id, totalPausedMs);
 
       if (result.success) {
-        Alert.alert(
-          'Meeting Ended',
-          `Final cost: ${EmployeeCostCalculator.formatCurrency(realTimeCost.currentCost)}\n\nDuration: ${timeDisplay}\nAttendees: ${attendees.length}`,
-          [
-            {
-              text: 'View History',
-              onPress: () => {
-                navigation.navigate('Main', {
-                  screen: 'History',
-                });
-              },
-            },
-            {
-              text: 'Done',
-              onPress: () => {
-                navigation.navigate('Main', {
-                  screen: 'Today',
-                });
-              },
-              style: 'cancel',
-            },
-          ]
-        );
+        setShowEndDialog(true);
       } else {
         Alert.alert('Error', 'Failed to save meeting data');
         navigation.navigate('Main', { screen: 'Today' });
@@ -125,9 +104,36 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
     }
   };
 
+  const handleViewHistory = () => {
+    setShowEndDialog(false);
+    navigation.navigate('Main', {
+      screen: 'History',
+    });
+  };
+
+  const handleDone = () => {
+    setShowEndDialog(false);
+    navigation.navigate('Main', {
+      screen: 'Today',
+    });
+  };
+
   // Calculate real-time costs
   const elapsedMinutes = elapsedSeconds / 60;
   const realTimeCost = MeetingCostCalculator.calculateRealTimeCost(attendees, elapsedMinutes);
+
+  // Calculate progress bar based on current milestone interval
+  const milestones = [1, 15, 30, 45, 60, 90, 120];
+  let progressPercent = 0;
+
+  if (realTimeCost.nextMilestone) {
+    // Find the previous milestone
+    const nextMilestoneIndex = milestones.indexOf(realTimeCost.nextMilestone);
+    const prevMilestone = nextMilestoneIndex > 0 ? milestones[nextMilestoneIndex - 1] : 0;
+    const intervalDuration = realTimeCost.nextMilestone - prevMilestone;
+    const progressInInterval = elapsedMinutes - prevMilestone;
+    progressPercent = (progressInInterval / intervalDuration) * 100;
+  }
 
   // Format elapsed time
   const hours = Math.floor(elapsedSeconds / 3600);
@@ -176,26 +182,6 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
           </AppText>
         </View>
 
-        {/* Attendees - Simple List */}
-        <View style={styles.attendeesContainer}>
-          <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.attendeesLabel}>
-            IN THIS MEETING
-          </AppText>
-          {attendees.map((attendee, index) => (
-            <View key={index} style={styles.attendeeSimpleRow}>
-              <View style={styles.attendeeAvatar}>
-                <AppText variant="bodySmall" color={Colors.primary}>
-                  {attendee.name.charAt(0)}
-                </AppText>
-              </View>
-              <AppText variant="body">{attendee.name}</AppText>
-              <AppText variant="bodySmall" color={Colors.textSecondary} style={{ marginLeft: Spacing.xs }}>
-                • {attendee.role}
-              </AppText>
-            </View>
-          ))}
-        </View>
-
         {/* Expanded Details - Collapsible */}
         <View style={styles.divider} />
 
@@ -207,7 +193,7 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
             </AppText>
             <View style={styles.milestoneInfo}>
               <AppText variant="h3">
-                {realTimeCost.nextMilestone} minutes
+                Cost at {realTimeCost.nextMilestone} minutes:
               </AppText>
               <AppText variant="bodyLarge" color={Colors.primary}>
                 ${realTimeCost.nextMilestoneCost?.toFixed(2)}
@@ -221,7 +207,7 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
                 style={[
                   styles.progressFill,
                   {
-                    width: `${((elapsedMinutes % 15) / 15) * 100}%`,
+                    width: `${Math.min(progressPercent, 100)}%`,
                   },
                 ]}
               />
@@ -283,6 +269,62 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
           style={{ flex: 1 }}
         />
       </View>
+
+      {/* End Meeting Dialog */}
+      <Modal
+        visible={showEndDialog}
+        animationType="fade"
+        transparent={false}
+        onRequestClose={handleDone}
+      >
+        <View style={styles.endDialogContainer}>
+          <View style={styles.endDialogContent}>
+            <AppText variant="h2" style={styles.endDialogTitle}>
+              Meeting Ended
+            </AppText>
+
+            <View style={styles.endDialogStats}>
+              <View style={styles.endDialogStat}>
+                <AppText variant="bodySmall" color={Colors.textSecondary}>
+                  FINAL COST
+                </AppText>
+                <AppText variant="h1" color={Colors.primary} style={styles.endDialogCost}>
+                  {EmployeeCostCalculator.formatCurrency(realTimeCost.currentCost)}
+                </AppText>
+              </View>
+
+              <View style={styles.endDialogRow}>
+                <View style={styles.endDialogStatSmall}>
+                  <AppText variant="bodySmall" color={Colors.textSecondary}>
+                    Duration
+                  </AppText>
+                  <AppText variant="h3">{timeDisplay}</AppText>
+                </View>
+                <View style={styles.endDialogStatSmall}>
+                  <AppText variant="bodySmall" color={Colors.textSecondary}>
+                    Attendees
+                  </AppText>
+                  <AppText variant="h3">{attendees.length}</AppText>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.endDialogButtons}>
+              <Button
+                title="View History"
+                variant="secondary"
+                onPress={handleViewHistory}
+                style={styles.endDialogButton}
+              />
+              <Button
+                title="Done"
+                onPress={handleDone}
+                style={styles.endDialogButton}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -297,7 +339,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xl,
+    paddingTop: Spacing.md,
   },
   title: {
     textAlign: 'center',
@@ -313,9 +355,9 @@ const styles = StyleSheet.create({
   },
   costContainer: {
     alignItems: 'center',
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.xl,
-    paddingVertical: Spacing.md,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.sm,
+    paddingVertical: Spacing.sm,
   },
   costLabel: {
     letterSpacing: 2,
@@ -326,6 +368,7 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontSize: 72,
     fontWeight: '700',
+    lineHeight: 86,
     marginBottom: Spacing.xs,
   },
   costDisplayRising: {
@@ -337,12 +380,13 @@ const styles = StyleSheet.create({
   },
   timeContainer: {
     alignItems: 'center',
-    marginTop: Spacing.md,
-    marginBottom: Spacing.xl,
+    marginTop: 0,
+    marginBottom: Spacing.lg,
   },
   timeDisplay: {
-    fontSize: 48,
-    fontWeight: '600',
+    fontSize: 56,
+    fontWeight: '700',
+    lineHeight: 68,
     marginBottom: Spacing.xs,
   },
   attendeesContainer: {
@@ -426,6 +470,56 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
+  },
+  endDialogContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  endDialogContent: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: Colors.background,
+    borderRadius: 16,
+    padding: Spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  endDialogTitle: {
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+  },
+  endDialogStats: {
+    marginBottom: Spacing.xl,
+  },
+  endDialogStat: {
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  endDialogCost: {
+    fontSize: 48,
+    fontWeight: '700',
+    lineHeight: 58,
+    marginTop: Spacing.sm,
+  },
+  endDialogRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  endDialogStatSmall: {
+    alignItems: 'center',
+  },
+  endDialogButtons: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  endDialogButton: {
+    flex: 1,
   },
 });
 

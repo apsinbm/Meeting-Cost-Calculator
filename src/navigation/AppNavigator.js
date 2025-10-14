@@ -9,7 +9,8 @@ import EmployeeDetailScreen from '../screens/Employees/EmployeeDetailScreen';
 import ActiveMeetingScreen from '../screens/ActiveMeeting/ActiveMeetingScreen';
 import AboutCalculationsScreen from '../screens/Settings/AboutCalculationsScreen';
 import MeetingPredictorScreen from '../screens/MeetingPredictor/MeetingPredictorScreen';
-import EmployeeService from '../services/EmployeeService';
+import PrivacyPolicyScreen from '../screens/Legal/PrivacyPolicyScreen';
+import TermsOfServiceScreen from '../screens/Legal/TermsOfServiceScreen';
 
 const Stack = createStackNavigator();
 
@@ -27,11 +28,8 @@ const AppNavigator = () => {
 
   const checkOnboardingStatus = async () => {
     try {
-      // Check if user has at least one employee (indicates completed onboarding)
-      const employees = await EmployeeService.getEmployees();
-      if (employees.length > 0) {
-        setInitialRoute('Main');
-      }
+      // Always show welcome screen on app open
+      setInitialRoute('Welcome');
     } catch (error) {
       console.error('Error checking onboarding:', error);
     } finally {
@@ -59,6 +57,8 @@ const AppNavigator = () => {
         <Stack.Screen name="ActiveMeeting" component={ActiveMeetingScreen} />
         <Stack.Screen name="AboutCalculations" component={AboutCalculationsScreen} />
         <Stack.Screen name="MeetingPredictor" component={MeetingPredictorScreen} />
+        <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+        <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

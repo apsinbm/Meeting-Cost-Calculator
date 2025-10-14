@@ -262,6 +262,24 @@ class EmployeeService {
   }
 
   /**
+   * Delete all employees
+   */
+  async deleteAllEmployees() {
+    try {
+      await StorageService.saveEmployees([]);
+      return {
+        success: true,
+      };
+    } catch (error) {
+      console.error('Error deleting all employees:', error);
+      return {
+        success: false,
+        error: 'Failed to delete all employees',
+      };
+    }
+  }
+
+  /**
    * Generate unique ID
    */
   _generateId() {

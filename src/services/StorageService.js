@@ -145,6 +145,19 @@ class StorageService {
   }
 
   /**
+   * Generic remove data method
+   */
+  async removeData(key) {
+    try {
+      await AsyncStorage.removeItem(key);
+      return true;
+    } catch (error) {
+      console.error(`Error removing data for key ${key}:`, error);
+      return false;
+    }
+  }
+
+  /**
    * Clear all data (for testing/reset)
    */
   async clearAll() {

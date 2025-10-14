@@ -119,6 +119,22 @@ class MeetingService {
   }
 
   /**
+   * Delete all meetings
+   */
+  async deleteAllMeetings() {
+    try {
+      await StorageService.saveMeetings([]);
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting all meetings:', error);
+      return {
+        success: false,
+        error: 'Failed to delete all meetings',
+      };
+    }
+  }
+
+  /**
    * Start meeting tracking
    */
   async startMeeting(meetingData, attendees) {

@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   Modal,
-  Pressable,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -23,6 +22,7 @@ const EditTextModal = ({
   label,
   value,
   placeholder,
+  keyboardType,
   onConfirm,
   onCancel,
   validation,
@@ -50,6 +50,10 @@ const EditTextModal = ({
     onConfirm(inputValue);
   };
 
+  if (!visible) {
+    return null;
+  }
+
   return (
     <Modal
       visible={visible}
@@ -57,53 +61,52 @@ const EditTextModal = ({
       transparent={true}
       onRequestClose={onCancel}
     >
-      <Pressable style={styles.modalOverlay} onPress={onCancel}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1, justifyContent: 'flex-end' }}
-        >
-          <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
-            <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-              {/* Header */}
-              <View style={styles.header}>
-                <AppText variant="h3">{title}</AppText>
-              </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.modalOverlay}
+      >
+        <View style={styles.modalContent}>
+          <SafeAreaView edges={['bottom']}>
+            {/* Header */}
+            <View style={styles.header}>
+              <AppText variant="h3">{title}</AppText>
+            </View>
 
-              {/* Content */}
-              <View style={styles.content}>
-                <AppText variant="body" style={styles.label}>
-                  {label}
-                </AppText>
-                <Input
-                  value={inputValue}
-                  onChangeText={(text) => {
-                    setInputValue(text);
-                    setError('');
-                  }}
-                  placeholder={placeholder}
-                  error={error}
-                  autoFocus
-                />
-              </View>
+            {/* Content */}
+            <View style={styles.content}>
+              <AppText variant="body" style={styles.label}>
+                {label}
+              </AppText>
+              <Input
+                value={inputValue}
+                onChangeText={(text) => {
+                  setInputValue(text);
+                  setError('');
+                }}
+                placeholder={placeholder}
+                keyboardType={keyboardType}
+                error={error}
+                autoFocus
+              />
+            </View>
 
-              {/* Footer Buttons */}
-              <View style={styles.footer}>
-                <Button
-                  title="Cancel"
-                  variant="secondary"
-                  onPress={onCancel}
-                  style={{ flex: 1, marginRight: Spacing.sm }}
-                />
-                <Button
-                  title="Save"
-                  onPress={handleConfirm}
-                  style={{ flex: 1 }}
-                />
-              </View>
-            </SafeAreaView>
-          </Pressable>
-        </KeyboardAvoidingView>
-      </Pressable>
+            {/* Footer Buttons */}
+            <View style={styles.footer}>
+              <Button
+                title="Cancel"
+                variant="secondary"
+                onPress={onCancel}
+                style={{ flex: 1, marginRight: Spacing.sm }}
+              />
+              <Button
+                title="Save"
+                onPress={handleConfirm}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </SafeAreaView>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -111,17 +114,13 @@ const EditTextModal = ({
 const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
-    backgroundColor: Colors.overlay,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
     backgroundColor: Colors.background,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: '50%',
-  },
-  container: {
-    flex: 1,
   },
   header: {
     paddingHorizontal: Spacing.md,
@@ -130,9 +129,9 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   content: {
-    flex: 1,
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
   },
   label: {
     marginBottom: Spacing.sm,

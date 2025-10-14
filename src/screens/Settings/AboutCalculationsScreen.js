@@ -14,7 +14,7 @@ const AboutCalculationsScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <AppText variant="body" color={Colors.primary}>
+          <AppText variant="body" color={Colors.primary} style={styles.backButtonText}>
             ‹ Back
           </AppText>
         </TouchableOpacity>
@@ -221,9 +221,13 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   backButton: {
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
     marginBottom: Spacing.sm,
     alignSelf: 'flex-start',
+    marginLeft: -Spacing.xs,
+  },
+  backButtonText: {
+    fontSize: 17,
   },
   content: {
     flex: 1,

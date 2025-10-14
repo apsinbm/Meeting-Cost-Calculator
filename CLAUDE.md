@@ -443,6 +443,15 @@ During active meetings:
 - Meeting Cost Predictor screen
 - Pre-meeting cost calculation with duration options
 
+**Phase 9: UI Polish & Assets (v1.0.7)**
+- Swipe-to-delete functionality for employees
+- iOS-style back buttons across all screens
+- PNG illustrations for empty states (Cal.png, employee-empty-state.png, history-empty-state.png, play-button.png)
+- Consistent 180×180 pictogram sizes across Calendar, Start, and History screens
+- Motivational quotes on empty states (18pt, italic)
+- Fixed email functionality with LSApplicationQueriesSchemes
+- Version updated to 1.0.7 with October 2025 date
+
 ### 🚧 Pending Enhancements
 
 **Settings Management**
@@ -481,7 +490,7 @@ Before declaring any component/service complete:
   "expo": {
     "name": "Meeting Cost Calculator",
     "slug": "meeting-cost-calculator",
-    "version": "1.0.0",
+    "version": "1.0.7",
     "orientation": "portrait",
     "platforms": ["ios", "android"],
     "ios": {
@@ -489,7 +498,8 @@ Before declaring any component/service complete:
       "supportsTablet": true,
       "infoPlist": {
         "NSCalendarsUsageDescription": "This app reads your calendar to calculate meeting costs and match attendees to employee profiles.",
-        "NSRemindersUsageDescription": "This app needs access to reminders to track meeting schedules."
+        "NSRemindersUsageDescription": "This app needs access to reminders to track meeting schedules.",
+        "LSApplicationQueriesSchemes": ["mailto"]
       }
     },
     "android": {

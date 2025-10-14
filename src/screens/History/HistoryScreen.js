@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, FlatList, RefreshControl, Alert, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, FlatList, RefreshControl, Alert, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, Button } from '../../components';
@@ -117,6 +117,28 @@ const HistoryScreen = () => {
               loadHistory();
             } else {
               Alert.alert('Error', 'Failed to delete meeting');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteAllMeetings = () => {
+    Alert.alert(
+      'Delete All Meetings',
+      `Are you sure you want to delete all ${meetings.length} meeting${meetings.length !== 1 ? 's' : ''}? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete All',
+          style: 'destructive',
+          onPress: async () => {
+            const result = await MeetingService.deleteAllMeetings();
+            if (result.success) {
+              loadHistory();
+            } else {
+              Alert.alert('Error', 'Failed to delete all meetings');
             }
           },
         },
@@ -283,17 +305,35 @@ const HistoryScreen = () => {
         ListEmptyComponent={
           !loading && (
             <View style={styles.emptyState}>
-              <View style={styles.emptyIcon} />
+              <Image
+                source={require('../../../assets/history-empty-state.png')}
+                style={styles.emptyIcon}
+                resizeMode="contain"
+              />
               <AppText variant="h3" style={styles.emptyTitle}>
                 No meeting history yet
               </AppText>
               <AppText variant="body" color={Colors.textSecondary} style={styles.emptyText}>
                 Track your first meeting to see it here
               </AppText>
+              <AppText variant="body" color={Colors.textSecondary} style={styles.emptyQuote}>
+                Smaller meetings = clearer ownership, faster decisions, and less wasted time.
+              </AppText>
             </View>
           )
         }
       />
+
+      {/* Delete All Button */}
+      {meetings.length > 0 && (
+        <View style={styles.deleteAllContainer}>
+          <Button
+            title="Delete All Meetings"
+            onPress={handleDeleteAllMeetings}
+            style={styles.deleteAllButton}
+          />
+        </View>
+      )}
 
       {/* Edit Duration Modal */}
       <Modal
@@ -449,10 +489,8 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.xxxl,
   },
   emptyIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.gray200,
+    width: 180,
+    height: 180,
     marginBottom: Spacing.lg,
   },
   emptyTitle: {
@@ -461,6 +499,15 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  emptyQuote: {
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    fontSize: 18,
+    lineHeight: 25,
   },
   modalOverlay: {
     flex: 1,
@@ -503,6 +550,16 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     flex: 1,
+  },
+  deleteAllContainer: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.background,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  deleteAllButton: {
+    backgroundColor: Colors.error,
   },
 });
 

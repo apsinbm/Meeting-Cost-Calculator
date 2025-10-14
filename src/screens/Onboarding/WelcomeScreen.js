@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, AppText } from '../../components';
 import { Colors, Spacing } from '../../constants';
@@ -28,19 +28,23 @@ const WelcomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        {/* Logo placeholder */}
+        {/* Meeting illustration */}
         <View style={styles.logoContainer}>
-          <View style={styles.logoPlaceholder} />
+          <Image
+            source={require('../../../assets/meeting-illustration.png')}
+            style={styles.illustration}
+            resizeMode="contain"
+          />
         </View>
 
         {/* Headline */}
         <AppText variant="h1" style={styles.headline}>
-          Track What Meetings Really Cost
+          Track What Meetings Cost
         </AppText>
 
         {/* Subheadline */}
         <AppText variant="body" color={Colors.textSecondary} style={styles.subheadline}>
-          Calculate real-time costs including salary, bonuses, and Bermuda employment expenses
+          Calculate real-time employee costs to the company
         </AppText>
 
         {/* Benefits */}
@@ -88,12 +92,11 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: Spacing.xl,
+    alignItems: 'center',
   },
-  logoPlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Colors.primary,
+  illustration: {
+    width: 200,
+    height: 200,
   },
   headline: {
     textAlign: 'center',

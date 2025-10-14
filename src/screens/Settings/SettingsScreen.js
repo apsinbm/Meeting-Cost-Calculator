@@ -1,11 +1,14 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, EditTextModal, CurrencyPickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
 import EmployeeService from '../../services/EmployeeService';
 import CompanyService from '../../services/CompanyService';
+import MeetingService from '../../services/MeetingService';
+import StorageService from '../../services/StorageService';
+import ExportService from '../../services/ExportService';
 
 /**
  * Settings Screen
@@ -59,16 +62,94 @@ const SettingsScreen = ({ navigation }) => {
     setCurrencyModalVisible(false);
   };
 
-  const handleSaveWorkHours = async (hoursStr) => {
+  const validateWorkHours = (hoursStr) => {
     const hours = parseFloat(hoursStr);
     if (isNaN(hours) || hours <= 0 || hours > 168) {
       return 'Please enter a valid number of hours (1-168)';
     }
+    return null; // No error
+  };
+
+  const handleSaveWorkHours = async (hoursStr) => {
+    const hours = parseFloat(hoursStr);
     const result = await CompanyService.updateWorkWeekHours(hours);
     if (result.success) {
       setCompanySettings(result.settings);
     }
     setEditWorkHoursModalVisible(false);
+  };
+
+  const handleDeleteAllData = () => {
+    Alert.alert(
+      'Delete All Data',
+      'This will permanently delete ALL employees, meetings, and settings. This cannot be undone. Are you absolutely sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Everything',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Delete all data
+              await EmployeeService.deleteAllEmployees();
+              await MeetingService.deleteAllMeetings();
+              await StorageService.removeData('@company_settings');
+
+              // Reload data
+              await loadEmployeeCount();
+              await loadCompanySettings();
+
+              Alert.alert('Success', 'All data has been deleted.');
+            } catch (error) {
+              console.error('Error deleting all data:', error);
+              Alert.alert('Error', 'Failed to delete all data. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleManageCalendarPermissions = () => {
+    Alert.alert(
+      'Calendar Permissions',
+      'To manage calendar permissions, go to:\n\nSettings → Privacy & Security → Calendars → Meeting Cost Calculator\n\nYou can enable or disable calendar access there.',
+      [{ text: 'Open Settings', onPress: () => Linking.openSettings() }, { text: 'Cancel', style: 'cancel' }]
+    );
+  };
+
+  const handleExportEmployees = async () => {
+    try {
+      const result = await ExportService.exportEmployeesToCSV();
+      if (!result.success) {
+        Alert.alert('Export Failed', result.error || 'Unable to export employees');
+      }
+    } catch (error) {
+      console.error('Error exporting employees:', error);
+      Alert.alert('Export Failed', 'An error occurred while exporting employees');
+    }
+  };
+
+  const handleExportAllData = async () => {
+    Alert.alert(
+      'Export All Data',
+      'This will export your employees and meeting history as CSV files. These files will contain sensitive salary information.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Export',
+          onPress: async () => {
+            try {
+              await ExportService.exportEmployeesToCSV();
+              await ExportService.exportMeetingsToCSV();
+            } catch (error) {
+              console.error('Error exporting data:', error);
+              Alert.alert('Export Failed', 'An error occurred while exporting data');
+            }
+          },
+        },
+      ]
+    );
   };
 
   if (!companySettings) {
@@ -103,9 +184,10 @@ const SettingsScreen = ({ navigation }) => {
         label="Enter weekly work hours"
         value={companySettings.workWeekHours.toString()}
         placeholder="40"
+        keyboardType="numeric"
         onConfirm={handleSaveWorkHours}
         onCancel={() => setEditWorkHoursModalVisible(false)}
-        validation={handleSaveWorkHours}
+        validation={validateWorkHours}
       />
 
       {/* Header */}
@@ -144,7 +226,7 @@ const SettingsScreen = ({ navigation }) => {
           </AppText>
           <SettingsItem
             title="Payroll Tax Rate"
-            value="10%"
+            value="10% of annual salary"
             onPress={() => {}}
             disabled
           />
@@ -178,6 +260,52 @@ const SettingsScreen = ({ navigation }) => {
             value={employeeCount === 0 ? 'No employees yet' : `${employeeCount} employee${employeeCount !== 1 ? 's' : ''}`}
             onPress={() => navigation.navigate('EmployeeList')}
           />
+          {employeeCount > 0 && (
+            <SettingsItem
+              title="Export Employees"
+              value="Download as CSV"
+              onPress={handleExportEmployees}
+            />
+          )}
+        </View>
+
+        {/* Privacy & Permissions Section */}
+        <View style={styles.section}>
+          <AppText variant="h3" style={styles.sectionTitle}>
+            Privacy & Permissions
+          </AppText>
+          <SettingsItem
+            title="Calendar Access"
+            value="Manage permissions"
+            onPress={handleManageCalendarPermissions}
+          />
+          <SettingsItem
+            title="Export All Data"
+            value="Employees & meetings"
+            onPress={handleExportAllData}
+          />
+          <SettingsItem
+            title="Delete All Data"
+            value="Employees & meetings"
+            onPress={handleDeleteAllData}
+          />
+        </View>
+
+        {/* Legal Section */}
+        <View style={styles.section}>
+          <AppText variant="h3" style={styles.sectionTitle}>
+            Legal
+          </AppText>
+          <SettingsItem
+            title="Privacy Policy"
+            value="How we handle your data"
+            onPress={() => navigation.navigate('PrivacyPolicy')}
+          />
+          <SettingsItem
+            title="Terms of Service"
+            value="Terms & conditions"
+            onPress={() => navigation.navigate('TermsOfService')}
+          />
         </View>
 
         {/* About Section */}
@@ -190,6 +318,22 @@ const SettingsScreen = ({ navigation }) => {
             value="Details & limitations"
             onPress={() => navigation.navigate('AboutCalculations')}
           />
+          <SettingsItem
+            title="Show Welcome Screen"
+            value="View app introduction"
+            onPress={() => {
+              const parent = navigation.getParent();
+              if (parent) {
+                parent.navigate('Welcome');
+              }
+            }}
+          />
+          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center' }}>
+            Version 1.0.7
+          </AppText>
+          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs, textAlign: 'center' }}>
+            Your data never leaves your device
+          </AppText>
         </View>
 
         <View style={{ height: Spacing.xl }} />

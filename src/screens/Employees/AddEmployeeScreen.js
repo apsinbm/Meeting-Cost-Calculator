@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input, AppText, Card } from '../../components';
 import { Colors, Spacing } from '../../constants';
@@ -134,12 +134,13 @@ const AddEmployeeScreen = ({ navigation, route }) => {
         {/* Header */}
         <View style={styles.header}>
           {!isFirstEmployee && (
-            <Button
-              title="‹ Back"
-              variant="secondary"
+            <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backButton}
-            />
+              activeOpacity={0.6}
+            >
+              <AppText variant="body" color={Colors.primary} style={styles.backButtonText}>‹ Back</AppText>
+            </TouchableOpacity>
           )}
           <AppText variant="h2">{isEditing ? 'Edit Employee' : (isFirstEmployee ? 'Add Your First Employee' : 'Add Employee')}</AppText>
           {isFirstEmployee && (
@@ -305,8 +306,13 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   backButton: {
-    width: 80,
+    alignSelf: 'flex-start',
+    paddingVertical: Spacing.sm,
     marginBottom: Spacing.sm,
+    marginLeft: -Spacing.xs,
+  },
+  backButtonText: {
+    fontSize: 17,
   },
   content: {
     flex: 1,
