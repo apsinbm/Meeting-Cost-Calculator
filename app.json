@@ -13,17 +13,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.meetingcostcalculator.app",
+      "bundleIdentifier": "com.aps.meetingcostcalculator",
       "infoPlist": {
         "NSCalendarsUsageDescription": "Meeting Cost Calculator reads your calendar to display scheduled meetings, match attendees to employee profiles, and pre-calculate meeting costs. Your calendar data never leaves your device.",
         "NSRemindersUsageDescription": "This app needs access to reminders to track meeting schedules. Your data never leaves your device.",
         "LSApplicationQueriesSchemes": [
           "mailto"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
-      "package": "com.meetingcostcalculator.app",
+      "package": "com.aps.meetingcostcalculator",
       "permissions": [
         "READ_CALENDAR",
         "POST_NOTIFICATIONS",
