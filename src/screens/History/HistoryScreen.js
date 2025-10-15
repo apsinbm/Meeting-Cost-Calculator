@@ -32,9 +32,13 @@ const HistoryScreen = () => {
     try {
       setLoading(true);
       const completed = await MeetingService.getCompletedMeetings();
-      setMeetings(completed);
+      // Sort by actualStart descending (newest first)
+      const sortedMeetings = completed.sort((a, b) =>
+        new Date(b.actualStart) - new Date(a.actualStart)
+      );
+      setMeetings(sortedMeetings);
 
-      const summaryData = await MeetingService.getMeetingsSummary(completed);
+      const summaryData = await MeetingService.getMeetingsSummary(sortedMeetings);
       setSummary(summaryData);
     } catch (error) {
       console.error('Error loading history:', error);
@@ -158,8 +162,11 @@ const HistoryScreen = () => {
       minute: '2-digit',
     });
 
-    const ranOver = item.ranOver;
-    const endedEarly = item.endedEarly;
+    // Format duration: show seconds if under 1 minute, otherwise show minutes
+    const actualMinutes = item.actualMinutes;
+    const durationDisplay = actualMinutes < 1
+      ? `${Math.round(actualMinutes * 60)} sec`
+      : `${Math.round(actualMinutes)} min`;
 
     return (
       <Card style={styles.meetingCard}>
@@ -177,29 +184,10 @@ const HistoryScreen = () => {
               {EmployeeCostCalculator.formatCurrency(item.actualCost)}
             </AppText>
             <AppText variant="caption" color={Colors.textSecondary}>
-              {item.actualMinutes} min
+              {durationDisplay}
             </AppText>
           </View>
         </View>
-
-        {(ranOver || endedEarly) && (
-          <View style={styles.statusRow}>
-            {ranOver && (
-              <View style={[styles.statusChip, styles.overrunChip]}>
-                <AppText variant="caption" color={Colors.warning}>
-                  Ran over +{item.minutesDifference} min
-                </AppText>
-              </View>
-            )}
-            {endedEarly && (
-              <View style={[styles.statusChip, styles.earlyChip]}>
-                <AppText variant="caption" color={Colors.success}>
-                  Ended early -{Math.abs(item.minutesDifference)} min
-                </AppText>
-              </View>
-            )}
-          </View>
-        )}
 
         <View style={styles.attendeesRow}>
           <AppText variant="caption" color={Colors.textSecondary}>
@@ -446,22 +434,6 @@ const styles = StyleSheet.create({
   },
   meetingCost: {
     alignItems: 'flex-end',
-  },
-  statusRow: {
-    flexDirection: 'row',
-    marginBottom: Spacing.sm,
-  },
-  statusChip: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: 12,
-    marginRight: Spacing.xs,
-  },
-  overrunChip: {
-    backgroundColor: Colors.warningLight,
-  },
-  earlyChip: {
-    backgroundColor: Colors.successLight,
   },
   attendeesRow: {
     paddingTop: Spacing.sm,
