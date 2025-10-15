@@ -162,10 +162,14 @@ const EmployeeDetailScreen = ({ route, navigation }) => {
               </AppText>
             </View>
 
-            <View style={[styles.breakdownRow, { marginTop: Spacing.md }]}>
-              <AppText variant="body">Health Insurance (Company Half)</AppText>
+            <AppText variant="bodySmall" color={Colors.textSecondary} style={{ marginTop: Spacing.md, marginBottom: Spacing.sm }}>
+              Annual Employer Costs
+            </AppText>
+
+            <View style={styles.breakdownRow}>
+              <AppText variant="body">Health Insurance</AppText>
               <AppText variant="body">
-                {EmployeeCostCalculator.formatCurrency(costBreakdown.healthInsuranceCompanyPortion)}
+                {EmployeeCostCalculator.formatCurrency(costBreakdown.healthInsuranceCost)}
               </AppText>
             </View>
 
@@ -180,8 +184,15 @@ const EmployeeDetailScreen = ({ route, navigation }) => {
 
             <View style={styles.breakdownRow}>
               <AppText variant="body">
-                Social Insurance ({costBreakdown.socialInsuranceRate}%)
+                Employer Pension ({costBreakdown.employerPensionRate}%)
               </AppText>
+              <AppText variant="body">
+                {EmployeeCostCalculator.formatCurrency(costBreakdown.employerPension)}
+              </AppText>
+            </View>
+
+            <View style={styles.breakdownRow}>
+              <AppText variant="body">Social Insurance</AppText>
               <AppText variant="body">
                 {EmployeeCostCalculator.formatCurrency(costBreakdown.socialInsurance)}
               </AppText>

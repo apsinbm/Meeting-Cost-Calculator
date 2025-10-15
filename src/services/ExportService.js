@@ -46,7 +46,7 @@ class ExportService {
 
       // Write file
       await FileSystem.writeAsStringAsync(fileUri, csvContent, {
-        encoding: FileSystem.EncodingType.UTF8,
+        encoding: 'utf8',
       });
 
       // Check if sharing is available
@@ -107,7 +107,7 @@ class ExportService {
 
       // Write file
       await FileSystem.writeAsStringAsync(fileUri, csvContent, {
-        encoding: FileSystem.EncodingType.UTF8,
+        encoding: 'utf8',
       });
 
       // Check if sharing is available

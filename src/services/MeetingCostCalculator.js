@@ -25,12 +25,19 @@ class MeetingCostCalculator {
     // Calculate costs at each milestone
     const milestones = this._calculateMilestoneCosts(totalPerMinuteCost, durationMinutes);
 
+    // Calculate per-attendee costs for this duration
+    const attendeeCosts = attendees.map(attendee => ({
+      ...attendee,
+      cost: this._round2((attendee.perMinuteCost || 0) * durationMinutes),
+    }));
+
     return {
       attendeeCount: attendees.length,
       totalPerMinuteCost: this._round3(totalPerMinuteCost),
       durationMinutes,
       totalCost: this._round2(totalCost),
       milestones,
+      attendeeCosts,
     };
   }
 

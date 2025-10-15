@@ -315,6 +315,35 @@ During active meetings:
 - Cost of overruns
 - Generated date
 
+## CSV Export
+
+### Data Export Features
+- Export employees to CSV with complete cost breakdown
+- Export meetings to CSV with attendees and actual costs
+- Export all data (employees + meetings) in separate files
+- Files saved to device and shared via native share sheet
+- Supports data portability and backup
+
+### CSV Format
+**Employees**: Name, Role, Email, Annual Salary, Annual Bonus, Health Insurance, Per-Minute Cost, Hourly Cost, Total Annual Cost
+**Meetings**: Title, Date, Start Time, Duration, Attendees, Actual Cost, Scheduled Duration, Status
+
+## Meeting Cost Calculations
+
+### Real-Time Tracking
+- **Calculation frequency**: Every second (updates cost display live)
+- **Minimum duration**: Calculates from 1 second onwards
+- **Display duration**: Shows as "1 minute" minimum for readability
+- **Actual costs**: Based on exact elapsed time in seconds
+
+### Meeting Cost Predictor
+- Pre-calculate meeting costs before scheduling
+- Select attendees and duration
+- Shows per-attendee cost contribution
+- Milestone cost breakdown at 15, 30, 45, 60, 90, 120 minutes
+- Insights: cost per minute, savings from removing attendees, reducing duration
+- Helps decide if meeting is worth having
+
 ## Development Guidelines
 
 ### Stability is Non-Negotiable
