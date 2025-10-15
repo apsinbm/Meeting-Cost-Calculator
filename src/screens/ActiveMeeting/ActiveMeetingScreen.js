@@ -97,10 +97,10 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
         setShowEndDialog(true);
       } else {
         Alert.alert('Error', 'Failed to save meeting data');
-        navigation.navigate('Main', { screen: 'Today' });
+        navigation.navigate('Main', { screen: 'History' });
       }
     } else {
-      navigation.navigate('Main', { screen: 'Today' });
+      navigation.navigate('Main', { screen: 'History' });
     }
   };
 
@@ -114,7 +114,7 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   const handleDone = () => {
     setShowEndDialog(false);
     navigation.navigate('Main', {
-      screen: 'Today',
+      screen: 'History',
     });
   };
 

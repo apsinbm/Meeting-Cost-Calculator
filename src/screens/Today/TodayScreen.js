@@ -22,7 +22,6 @@ const TodayScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [manualAttendees, setManualAttendees] = useState({}); // keyed by meeting id
-  const [isStartingManualMeeting, setIsStartingManualMeeting] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useFocusEffect(
@@ -142,51 +141,8 @@ const TodayScreen = ({ navigation }) => {
     setSelectedDate(new Date());
   };
 
-  const handleStartManualMeeting = () => {
-    console.log('Start Meeting button pressed', { employeeCount: employees.length });
-
-    if (employees.length === 0) {
-      console.log('No employees found, showing alert');
-      Alert.alert(
-        'No Employees',
-        'Add employees first to track meeting costs.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Add Employees', onPress: () => navigation.navigate('EmployeeList') },
-        ]
-      );
-      return;
-    }
-
-    console.log('Opening attendee picker modal');
-    setIsStartingManualMeeting(true);
-    setModalVisible(true);
-  };
-
   const handleConfirmAttendees = (selectedEmployees) => {
-    console.log('Confirm attendees called', {
-      isStartingManualMeeting,
-      selectedEmployeesCount: selectedEmployees.length
-    });
-
-    if (isStartingManualMeeting) {
-      // Starting a new manual meeting
-      const manualMeeting = {
-        title: 'Ad-hoc Meeting',
-        scheduledStart: new Date().toISOString(),
-        isManual: true,
-      };
-
-      console.log('Starting manual meeting, navigating to ActiveMeeting');
-      setModalVisible(false);
-      setIsStartingManualMeeting(false);
-      setSelectedMeeting(null);
-
-      navigation.navigate('ActiveMeeting', {
-        meeting: manualMeeting,
-        attendees: selectedEmployees,
-      });
-    } else if (selectedMeeting) {
+    if (selectedMeeting) {
       // Selecting attendees for existing calendar meeting
       const meetingId = selectedMeeting.calendarEventId;
       const updatedAttendees = {
@@ -344,15 +300,12 @@ const TodayScreen = ({ navigation }) => {
         visible={modalVisible}
         employees={employees}
         selectedEmployees={
-          isStartingManualMeeting
-            ? []
-            : (selectedMeeting ? (manualAttendees[selectedMeeting.calendarEventId] || selectedMeeting.attendees.matched || []) : [])
+          selectedMeeting ? (manualAttendees[selectedMeeting.calendarEventId] || selectedMeeting.attendees.matched || []) : []
         }
         onConfirm={handleConfirmAttendees}
         onCancel={() => {
           setModalVisible(false);
           setSelectedMeeting(null);
-          setIsStartingManualMeeting(false);
         }}
         onAddEmployee={() => {
           setModalVisible(false);
@@ -427,6 +380,16 @@ const TodayScreen = ({ navigation }) => {
         </View>
       ) : (
         <>
+          {meetings.length > 0 && (
+            <View style={styles.calendarHeaderContainer}>
+              <AppText variant="h3" style={styles.calendarHeaderTitle}>
+                Meetings in Calendar Today
+              </AppText>
+              <AppText variant="caption" color={Colors.textSecondary} style={styles.calendarHeaderSubtitle}>
+                Add calendar attendees to your employee database to calculate costs
+              </AppText>
+            </View>
+          )}
           <FlatList
             data={meetings}
             renderItem={renderMeeting}
@@ -446,10 +409,7 @@ const TodayScreen = ({ navigation }) => {
                     />
                   </View>
                   <AppText variant="h3" style={styles.emptyTitle}>
-                    No Meeting Planned For Today
-                  </AppText>
-                  <AppText variant="body" color={Colors.textSecondary} style={styles.emptyText}>
-                    Start a manual meeting to track costs
+                    No Meetings Scheduled in Calendar Today
                   </AppText>
                   <AppText variant="body" color={Colors.textSecondary} style={styles.emptyQuote}>
                     "Keep meetings as small as possible (under 10 people) and as short as possible, include only those who can directly contribute or decide, and empower people to leave if they're not adding value. Large meetings kill productivity and accountability and add costs."
@@ -458,15 +418,6 @@ const TodayScreen = ({ navigation }) => {
               )
             }
           />
-          {/* Floating Action Button */}
-          {employees.length > 0 && (
-            <View style={styles.floatingButtonContainer}>
-              <Button
-                title="Start Meeting"
-                onPress={handleStartManualMeeting}
-              />
-            </View>
-          )}
         </>
       )}
     </SafeAreaView>
@@ -498,19 +449,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  floatingButtonContainer: {
-    position: 'absolute',
-    bottom: Spacing.md,
-    left: Spacing.md,
-    right: Spacing.md,
+  calendarHeaderContainer: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
     backgroundColor: Colors.background,
-    borderRadius: 12,
-    padding: Spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  calendarHeaderTitle: {
+    marginBottom: Spacing.xs,
+  },
+  calendarHeaderSubtitle: {
+    lineHeight: 18,
   },
   list: {
     paddingBottom: Spacing.lg,

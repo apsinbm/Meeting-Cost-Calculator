@@ -194,7 +194,8 @@ class MeetingService {
       const endTime = new Date(actualEnd);
       const wallClockMs = endTime - startTime;
       const activeMs = wallClockMs - pausedTimeMs;
-      const actualMinutes = Math.round(activeMs / (1000 * 60));
+      // Store as decimal minutes for per-second accuracy (e.g., 45 seconds = 0.75 minutes)
+      const actualMinutes = activeMs / (1000 * 60);
 
       // Calculate final costs
       const scheduledMinutes = meeting.durationMinutes || 0;
