@@ -2,7 +2,7 @@
   "expo": {
     "name": "Meeting Cost Calculator",
     "slug": "meeting-cost-calculator",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
