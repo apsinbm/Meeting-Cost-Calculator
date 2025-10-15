@@ -149,9 +149,8 @@ We are not responsible for:
 
 For questions or concerns about this Privacy Policy:
 
-**Email**: [YOUR CONTACT EMAIL]
-**Website**: [YOUR WEBSITE]
-**App Support**: [YOUR SUPPORT URL]
+**Privacy Contact**: info@atlanticground.com
+**Support**: info@atlanticground.com
 
 ## Open Source
 
