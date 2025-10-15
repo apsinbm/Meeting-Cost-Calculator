@@ -397,27 +397,28 @@ const TodayScreen = ({ navigation }) => {
       {!hasPermission ? (
         <View style={styles.permissionContainer}>
           <View style={styles.emptyIconContainer}>
-            <AppText style={styles.emptyIconText}>🔒</AppText>
+            <Image
+              source={require('../../../assets/Cal.png')}
+              style={styles.emptyIconImage}
+              resizeMode="contain"
+            />
           </View>
           <AppText variant="h3" style={styles.permissionTitle}>
             Calendar Access
           </AppText>
           <AppText variant="body" color={Colors.textSecondary} style={styles.permissionText}>
-            Grant calendar and reminders access to see scheduled meetings and pre-calculate costs, or skip to start manual meetings.
+            Grant calendar and reminders access to see scheduled meetings and pre-calculate costs.
           </AppText>
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center', fontStyle: 'italic' }}>
             Note: iOS requires both Calendar and Reminders permissions
+          </AppText>
+          <AppText variant="body" color={Colors.textSecondary} style={styles.emptyQuote}>
+            "The most efficient meeting is the one that never happened."
           </AppText>
           <View style={{ width: '100%', marginTop: Spacing.lg }}>
             <Button
               title="Grant Access"
               onPress={handleRequestPermission}
-            />
-            <Button
-              title="Skip - Use Manual Meetings Only"
-              variant="secondary"
-              onPress={() => setHasPermission(true)}
-              style={{ marginTop: Spacing.md }}
             />
           </View>
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.md, textAlign: 'center' }}>

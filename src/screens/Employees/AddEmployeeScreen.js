@@ -272,7 +272,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
               </Card>
 
               <AppText variant="caption" color={Colors.textSecondary} style={styles.hint}>
-                Based on Bermuda employment costs: salary + bonus + health insurance + payroll tax (10%) + social insurance (5%)
+                Based on Bermuda employment costs: salary + bonus + health insurance + payroll tax (10%) + employer pension (5%) + social insurance ($1,957.80 annual)
               </AppText>
             </View>
           )}
