@@ -2,46 +2,30 @@ workflows:
   ios-release:
     name: iOS Release Build
     instance_type: mac_mini_m1
-    max_build_duration: 60
+    max_build_duration: 120
     environment:
       ios_signing:
         distribution_type: app_store
         bundle_id: com.aps.meetingcostcalculator
       vars:
-        XCODE_WORKSPACE: "ios/MeetingCostCalculator.xcworkspace"
-        XCODE_SCHEME: "MeetingCostCalculator"
-        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
-        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
-        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_PRIVATE_KEY
+        BUNDLE_ID: "com.aps.meetingcostcalculator"
       node: 18
     scripts:
       - name: Install dependencies
         script: |
           npm ci
-          npx expo prebuild --clean
-      - name: Build iOS app
+      - name: Setup Expo
         script: |
-          cd ios
-          xcodebuild -workspace MeetingCostCalculator.xcworkspace \
-            -scheme MeetingCostCalculator \
-            -configuration Release \
-            -derivedDataPath build \
-            -archivePath build/MeetingCostCalculator.xcarchive \
-            archive
-      - name: Export IPA
+          npm install -g eas-cli
+      - name: Build with EAS
         script: |
-          xcodebuild -exportArchive \
-            -archivePath build/MeetingCostCalculator.xcarchive \
-            -exportOptionsPlist export.plist \
-            -exportPath build
-      - name: Upload to TestFlight
-        script: |
-          xcrun altool --upload-app -f build/MeetingCostCalculator.ipa \
-            -t ios \
-            -u $APP_STORE_CONNECT_USERNAME \
-            -p $APP_STORE_CONNECT_PASSWORD
+          eas build --platform ios --wait --non-interactive
     artifacts:
       - build/**/*.ipa
     publishing:
-      app_store_connect:
-        auth: integration
+      email:
+        recipients:
+          - singleton33@yahoo.com
+        notify:
+          success: true
+          failure: true
