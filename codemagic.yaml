@@ -5,6 +5,8 @@ workflows:
     max_build_duration: 120
     environment:
       node: 20
+      groups:
+        - ios
     scripts:
       - name: Install dependencies
         script: npm install
