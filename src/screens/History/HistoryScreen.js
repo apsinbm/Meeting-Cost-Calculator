@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, Button } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { scaledFontSize, scaledSpacing, scaledImageDimensions, getIsIPad } from '../../utils/iPadOptimization';
 import MeetingService from '../../services/MeetingService';
 import MeetingCostCalculator from '../../services/MeetingCostCalculator';
 import EmailService from '../../services/EmailService';
@@ -456,30 +457,33 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xxxl,
+    paddingHorizontal: scaledSpacing(Spacing.xl),
+    paddingTop: getIsIPad() ? scaledSpacing(Spacing.xxxl * 4) : scaledSpacing(Spacing.xxxl),
+    paddingBottom: scaledSpacing(Spacing.md),
+    flex: 1,
+    justifyContent: 'flex-start',
   },
   emptyIcon: {
-    width: 180,
-    height: 180,
-    marginBottom: Spacing.lg,
+    ...scaledImageDimensions(180, 180),
+    marginBottom: scaledSpacing(Spacing.lg),
   },
   emptyTitle: {
-    marginBottom: Spacing.sm,
+    marginBottom: scaledSpacing(Spacing.sm),
     textAlign: 'center',
+    fontSize: scaledFontSize(20),
   },
   emptyText: {
     textAlign: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: scaledSpacing(Spacing.lg),
+    fontSize: scaledFontSize(16),
   },
   emptyQuote: {
     textAlign: 'center',
     fontStyle: 'italic',
-    marginTop: Spacing.lg,
-    paddingHorizontal: Spacing.md,
-    fontSize: 18,
-    lineHeight: 25,
+    marginTop: scaledSpacing(Spacing.lg),
+    paddingHorizontal: scaledSpacing(Spacing.md),
+    fontSize: scaledFontSize(18),
+    lineHeight: scaledFontSize(18) * 1.4,
   },
   modalOverlay: {
     flex: 1,

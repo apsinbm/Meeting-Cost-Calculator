@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Button, AttendeePickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { scaledFontSize, scaledSpacing, scaledImageDimensions } from '../../utils/iPadOptimization';
 import EmployeeService from '../../services/EmployeeService';
 
 /**
@@ -147,38 +148,40 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.backgroundSecondary,
   },
   header: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: scaledSpacing(Spacing.md),
+    paddingVertical: scaledSpacing(Spacing.md),
     backgroundColor: Colors.background,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
   content: {
     flex: 1,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: scaledSpacing(Spacing.md),
   },
   centerContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.xl,
+    paddingHorizontal: scaledSpacing(Spacing.xl),
   },
   playButtonImage: {
-    width: 180,
-    height: 180,
-    marginBottom: Spacing.xl,
+    ...scaledImageDimensions(180, 180),
+    marginBottom: scaledSpacing(Spacing.xl),
   },
   title: {
-    marginBottom: Spacing.md,
+    marginBottom: scaledSpacing(Spacing.md),
     textAlign: 'center',
+    fontSize: scaledFontSize(20),
   },
   description: {
     textAlign: 'center',
-    marginBottom: Spacing.sm,
+    marginBottom: scaledSpacing(Spacing.sm),
+    fontSize: scaledFontSize(16),
   },
   employeeCount: {
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: scaledSpacing(Spacing.xl),
+    fontSize: scaledFontSize(14),
   },
   buttonContainer: {
     width: '100%',
@@ -188,8 +191,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   warning: {
-    marginTop: Spacing.md,
+    marginTop: scaledSpacing(Spacing.md),
     textAlign: 'center',
+    fontSize: scaledFontSize(12),
   },
 });
 

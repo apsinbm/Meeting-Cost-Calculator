@@ -329,7 +329,7 @@ const SettingsScreen = ({ navigation }) => {
             }}
           />
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center' }}>
-            Version 1.0.7
+            Version 1.0.11
           </AppText>
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs, textAlign: 'center' }}>
             Your data never leaves your device

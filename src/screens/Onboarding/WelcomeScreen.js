@@ -3,6 +3,7 @@ import { View, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, AppText } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { scaledFontSize, scaledSpacing, scaledImageDimensions, getMaxContentWidth } from '../../utils/iPadOptimization';
 
 /**
  * Welcome Screen
@@ -37,10 +38,12 @@ const WelcomeScreen = ({ navigation }) => {
           />
         </View>
 
-        {/* Headline */}
-        <AppText variant="h1" style={styles.headline}>
-          Track What Meetings Cost
-        </AppText>
+        {/* Headline - wrapped for better text handling on iPad */}
+        <View style={styles.headlineContainer}>
+          <AppText variant="h1" style={styles.headline}>
+            Track What Meetings Cost
+          </AppText>
+        </View>
 
         {/* Subheadline */}
         <AppText variant="body" color={Colors.textSecondary} style={styles.subheadline}>
@@ -86,53 +89,67 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xxl,
+    paddingHorizontal: scaledSpacing(Spacing.md),
+    paddingTop: scaledSpacing(Spacing.lg),
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    maxWidth: getMaxContentWidth(),
+    alignSelf: 'center',
+    width: '100%',
   },
   logoContainer: {
-    marginBottom: Spacing.xl,
+    marginBottom: scaledSpacing(Spacing.lg),
     alignItems: 'center',
   },
   illustration: {
-    width: 200,
-    height: 200,
+    ...scaledImageDimensions(220, 220),
+  },
+  headlineContainer: {
+    width: '100%',
+    marginBottom: scaledSpacing(Spacing.md),
+    paddingHorizontal: scaledSpacing(Spacing.sm),
   },
   headline: {
     textAlign: 'center',
-    marginBottom: Spacing.md,
+    fontSize: scaledFontSize(32),
+    lineHeight: scaledFontSize(32) * 1.3,
   },
   subheadline: {
     textAlign: 'center',
-    marginBottom: Spacing.xl,
+    marginBottom: scaledSpacing(Spacing.xl),
+    fontSize: scaledFontSize(16),
   },
   benefitsContainer: {
     width: '100%',
-    marginTop: Spacing.lg,
+    marginTop: scaledSpacing(Spacing.lg),
   },
   benefitItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: Spacing.md,
+    marginBottom: scaledSpacing(Spacing.md),
   },
   bullet: {
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: Colors.primary,
-    marginTop: 8,
-    marginRight: Spacing.sm,
+    marginTop: scaledSpacing(8),
+    marginRight: scaledSpacing(Spacing.sm),
   },
   benefitText: {
     flex: 1,
+    fontSize: scaledFontSize(16),
   },
   footer: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.md,
+    paddingHorizontal: scaledSpacing(Spacing.md),
+    paddingBottom: scaledSpacing(Spacing.md),
+    width: '100%',
+    alignItems: 'center',
   },
   footerHint: {
     textAlign: 'center',
-    marginTop: Spacing.sm,
+    marginTop: scaledSpacing(Spacing.sm),
+    fontSize: scaledFontSize(12),
   },
 });
 

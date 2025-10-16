@@ -103,9 +103,6 @@ const AddEmployeeScreen = ({ navigation, route }) => {
               text: 'OK',
               onPress: () => {
                 navigation.goBack();
-                if (route.params?.onEmployeeAdded) {
-                  route.params.onEmployeeAdded(result.employee);
-                }
               },
             },
           ]

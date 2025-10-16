@@ -1,9 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, StyleSheet, FlatList, RefreshControl, Alert, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, Button, AttendeePickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { scaledFontSize, scaledSpacing, scaledImageDimensions } from '../../utils/iPadOptimization';
 import CalendarService from '../../services/CalendarService';
 import EmployeeService from '../../services/EmployeeService';
 import MeetingCostCalculator from '../../services/MeetingCostCalculator';
@@ -23,11 +24,18 @@ const TodayScreen = ({ navigation }) => {
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [manualAttendees, setManualAttendees] = useState({}); // keyed by meeting id
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const shouldReopenModalRef = useRef(false);
 
   useFocusEffect(
     useCallback(() => {
       loadEmployees();
       loadMeetings();
+
+      // If modal should be reopened (employee was added), do so
+      if (shouldReopenModalRef.current) {
+        shouldReopenModalRef.current = false;
+        setTimeout(() => setModalVisible(true), 100);
+      }
     }, [selectedDate])
   );
 
@@ -309,13 +317,8 @@ const TodayScreen = ({ navigation }) => {
         }}
         onAddEmployee={() => {
           setModalVisible(false);
-          navigation.navigate('AddEmployee', {
-            onEmployeeAdded: () => {
-              loadEmployees();
-              // Reopen modal after adding employee
-              setTimeout(() => setModalVisible(true), 100);
-            },
-          });
+          shouldReopenModalRef.current = true;
+          navigation.navigate('AddEmployee', { isFromTodayScreen: true });
         }}
       />
 
@@ -508,50 +511,52 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.xl,
+    paddingHorizontal: scaledSpacing(Spacing.xl),
   },
   permissionTitle: {
-    marginBottom: Spacing.sm,
+    marginBottom: scaledSpacing(Spacing.sm),
     textAlign: 'center',
+    fontSize: scaledFontSize(20),
   },
   permissionText: {
     textAlign: 'center',
+    fontSize: scaledFontSize(16),
   },
   emptyState: {
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.xxxl,
+    paddingHorizontal: scaledSpacing(Spacing.xl),
+    paddingTop: scaledSpacing(Spacing.xxxl),
+    paddingBottom: scaledSpacing(Spacing.xxxl),
   },
   emptyIconContainer: {
-    width: 180,
-    height: 180,
+    ...scaledImageDimensions(180, 180),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: scaledSpacing(Spacing.lg),
   },
   emptyIconImage: {
-    width: 180,
-    height: 180,
+    ...scaledImageDimensions(180, 180),
   },
   emptyIconText: {
     fontSize: 48,
   },
   emptyTitle: {
-    marginBottom: Spacing.sm,
+    marginBottom: scaledSpacing(Spacing.sm),
     textAlign: 'center',
+    fontSize: scaledFontSize(20),
   },
   emptyText: {
     textAlign: 'center',
-    marginBottom: Spacing.lg,
+    marginBottom: scaledSpacing(Spacing.lg),
+    fontSize: scaledFontSize(16),
   },
   emptyQuote: {
     textAlign: 'center',
     fontStyle: 'italic',
-    marginTop: Spacing.lg,
-    paddingHorizontal: Spacing.md,
-    fontSize: 18,
-    lineHeight: 25,
+    marginTop: scaledSpacing(Spacing.lg),
+    paddingHorizontal: scaledSpacing(Spacing.md),
+    fontSize: scaledFontSize(18),
+    lineHeight: scaledFontSize(18) * 1.4,
   },
   emptyHint: {
     textAlign: 'center',
