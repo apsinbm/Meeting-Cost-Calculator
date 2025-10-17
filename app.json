@@ -2,7 +2,7 @@
   "expo": {
     "name": "Meeting Cost Calculator",
     "slug": "meeting-cost-calculator",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -28,7 +28,7 @@
       "bundleIdentifier": "com.aps.meetingcostcalculator",
       "infoPlist": {
         "NSCalendarsUsageDescription": "Meeting Cost Calculator reads your calendar to display scheduled meetings, match attendees to employee profiles, and pre-calculate meeting costs. Your calendar data never leaves your device.",
-        "NSRemindersUsageDescription": "Meeting Cost Calculator uses reminders to send you notifications when meetings reach milestone durations (15, 30, 45, 60 minutes, etc.) to help you be aware of meeting costs in real-time. For example, you'll receive a reminder notification after 15 minutes so you can review how much the meeting has cost so far.",
+        "NSRemindersUsageDescription": "This app accesses your reminders to send you milestone notifications during active meetings. For example, when a meeting reaches 15 minutes, you'll receive a notification showing the cost accumulated so far, helping you make decisions about meeting efficiency.",
         "LSApplicationQueriesSchemes": [
           "mailto"
         ],

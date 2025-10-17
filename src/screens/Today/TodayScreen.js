@@ -373,7 +373,7 @@ const TodayScreen = ({ navigation }) => {
           </AppText>
           <View style={{ width: '100%', marginTop: Spacing.lg }}>
             <Button
-              title="Grant Access"
+              title="Continue"
               onPress={handleRequestPermission}
             />
           </View>
