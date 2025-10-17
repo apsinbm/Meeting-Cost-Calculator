@@ -249,6 +249,176 @@ NOT: `codesign -v your-app.ipa` (checks the zip, not the app)
 
 ---
 
+## Faster Upload Methods for Next Time
+
+### ⚡ Recommended: xcrun altool (FASTEST - What We Used)
+
+**Status:** ✅ WORKS - Already tested successfully
+
+**Advantages:**
+- Already installed on your Mac (part of Xcode)
+- No app store download needed
+- Fastest method (11.8 seconds for 16MB IPA)
+- Works offline
+- Reliable and direct
+
+**Command:**
+```bash
+xcrun altool --upload-app \
+  --type ios \
+  --file ~/Downloads/MeetingCostCalculator-v1.0.13-build18.ipa \
+  --username singleton33@yahoo.com \
+  --password "YOUR-APP-SPECIFIC-PASSWORD"
+```
+
+**Why this is best:**
+- Built into Xcode (no extra downloads)
+- Works every time (unlike EAS Submit which had outages)
+- Fastest upload speed
+- Direct to Apple (no middleman)
+
+### Alternative 1: Download Transporter Without App Store
+
+**Problem:** Mac App Store won't download Transporter for you
+
+**Solution #1: Direct from Apple (Requires macOS Monterey+)**
+```bash
+# Install via Mac App Store command-line
+mas install 1450874784
+```
+(Note: Requires `mas` CLI installed: `brew install mas`)
+
+**Solution #2: Manual Installation via Homebrew**
+```bash
+# Alternative: Try installing via homebrew cask (if available)
+brew tap --custom-home homebrew/cask
+brew install --cask transporter
+```
+
+**Solution #3: Download Direct from Apple**
+1. Visit: https://apps.apple.com/us/app/transporter/id1450874784
+2. Right-click "View in Mac App Store"
+3. Look for direct download link
+4. May require creating temporary Mac App Store account
+
+**Solution #4: Use Previous Versions**
+If you have another Mac with Transporter installed:
+- Copy from: `/Applications/Transporter.app`
+- Paste to your Mac: `/Applications/Transporter.app`
+- Right-click → Open to approve
+
+### Alternative 2: Web Upload via App Store Connect
+
+**Status:** ✅ WORKS - But slower UI
+
+**Steps:**
+1. Go to https://appstoreconnect.apple.com
+2. Click "My Apps" → Your App → TestFlight tab
+3. Look for "Upload Build" or "New Build" section
+4. Drag/drop IPA directly into browser
+5. Wait for processing
+
+**Pros:** No tools needed
+**Cons:** Slower, depends on browser stability
+
+### Alternative 3: Xcode Direct Upload (If Building Locally)
+
+**Status:** ⚠️ Complex - not recommended for EAS builds
+
+```bash
+# If you were doing local Xcode builds:
+xcode-build-for-app-store -workspace YourApp.xcworkspace \
+  -scheme YourApp \
+  -configuration Release
+```
+
+Then upload via Xcode's Archive organizer
+
+### Why NOT to Use EAS Submit
+
+**Issues Encountered (Oct 17, 2025):**
+- EAS Submit had service outage ("Increased iOS submission times")
+- Required interactive mode for API key setup
+- Added unnecessary middleman
+- Much slower than direct upload
+
+**When to use EAS Submit:** Never for production (use xcrun altool instead)
+
+---
+
+## Complete Fast Upload Workflow (For Next Time)
+
+### Step 1: Build
+```bash
+eas build --platform ios --non-interactive
+```
+(Wait ~3-5 minutes for build to complete)
+
+### Step 2: Verify Build is Ready
+Go to: https://expo.dev/accounts/patopopo/projects/meeting-cost-calculator/builds
+Look for status: **"Complete"**
+
+### Step 3: Download IPA (5-10 seconds)
+```bash
+cd ~/Downloads
+curl -L -o MyApp-v1.0.13-build18.ipa "https://expo.dev/artifacts/eas/[BUILD_ID].ipa"
+```
+
+### Step 4: Upload Directly to App Store (Fastest - 11 seconds)
+```bash
+xcrun altool --upload-app \
+  --type ios \
+  --file ~/Downloads/MyApp-v1.0.13-build18.ipa \
+  --username singleton33@yahoo.com \
+  --password "kuqw-cufs-jkut-ilji"
+```
+
+**Total time:** ~10-15 minutes (vs 45+ minutes with EAS Submit complications)
+
+---
+
+## App-Specific Password (For Uploads)
+
+**What it is:** A one-time password specifically for app uploads (NOT your Apple ID password)
+
+**Where to get it:**
+1. Go to: https://appleid.apple.com
+2. Sign in with `singleton33@yahoo.com`
+3. Click **Security** → **App-Specific Passwords**
+4. Click **"+"**
+5. Label: "App Store Upload"
+6. Copy the generated password (format: `xxxx-xxxx-xxxx-xxxx`)
+
+**Current password (saved for quick reference):** `kuqw-cufs-jkut-ilji`
+
+**Security note:** This password is only for uploads, not your main Apple ID
+
+---
+
+## Troubleshooting Upload Issues
+
+**If xcrun altool fails:**
+```bash
+# Verify Xcode is installed
+xcode-select --print-path
+# Should output: /Applications/Xcode.app/Contents/Developer
+
+# If not, install Command Line Tools
+xcode-select --install
+```
+
+**If "Invalid credentials":**
+- Verify app-specific password (not Apple ID password)
+- Regenerate a new app-specific password
+- Try again with new password
+
+**If "Couldn't communicate with server":**
+- Check internet connection
+- Verify Apple servers are up: https://developer.apple.com/system-status/
+- Wait 5 minutes and retry
+
+---
+
 **Contact Info:**
 - Expo Help: https://expo.dev/help
 - App Store Connect: https://appstoreconnect.apple.com
