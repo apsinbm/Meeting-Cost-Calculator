@@ -1,21 +1,81 @@
 # App Store Submission Progress - Meeting Cost Calculator
 
-**Last Updated:** Oct 16, 2025 at 8:38 PM
+**Last Updated:** Oct 17, 2025 at 5:29 PM
 
 ## Current Status
 
-- **App Version:** 1.0.12
-- **Build Number:** 17
-- **Current State:** Waiting for Apple Review
-- **Submitted:** Oct 16, 2025 at 8:38 PM
+- **App Version:** 1.0.12 with Build 1.0.13 (18)
+- **Build Number:** 18
+- **Current State:** Waiting for Apple Review (Resubmission #2)
+- **Submitted:** Oct 17, 2025 at 5:29 PM
+- **Submission ID:** dc25b8c1-fe0c-494c-b984-6f9ba14fa743
 
 ## Build Information
 
-- **IPA URL:** https://expo.dev/artifacts/eas/w2BuFK4KK13pixN29E3z3n.ipa
-- **Build ID:** f32bc722-f777-4e09-87f6-969c4a06921d
+### Current Build (Resubmission #2 - Oct 17)
+- **Version:** 1.0.13
+- **Build Number:** 18
+- **IPA URL:** https://expo.dev/artifacts/eas/oRaXzXvPbMp5S641JXW7wZ.ipa
+- **Build ID:** b906a1df-4a8f-4580-b994-3792ade8857d
 - **EAS Build Command:** `eas build --platform ios --non-interactive`
+- **Upload Method:** xcrun altool (iTMSTransporter)
+- **Upload Command:** `xcrun altool --upload-app --type ios --file ~/Downloads/MeetingCostCalculator-v1.0.13-build18.ipa --username singleton33@yahoo.com --password [APP_SPECIFIC_PASSWORD]`
 - **Node Version:** 20
 - **Bundle ID:** com.aps.meetingcostcalculator
+
+### Previous Build (Rejected)
+- **Version:** 1.0.12
+- **Build Number:** 17
+- **IPA URL:** https://expo.dev/artifacts/eas/w2BuFK4KK13pixN29E3z3n.ipa
+- **Rejection Date:** Oct 17, 2025 at 2:29 PM
+- **Submission ID (Rejected):** ac4ab9b0-a1c8-4c76-84c2-c52d89df1dab
+
+## Apple Rejection #1 - Oct 17, 2025 at 2:29 PM
+
+### Rejection Reason: Guideline 5.1.1 - Privacy - Data Collection and Storage
+
+**Issue #1: Permission Button Text**
+- **Problem:** Permission request screen had a button labeled "Grant Access" before the system permission dialog
+- **Apple's Feedback:** Use neutral button text like "Continue" or "Next" instead
+- **Root Cause:** Custom UI button before system permission request violated user control principles
+- **File:** `src/screens/Today/TodayScreen.js:376`
+- **Fix Applied:** Changed button text from `"Grant Access"` to `"Continue"`
+
+**Issue #2: Vague Reminders Purpose String**
+- **Problem:** NSRemindersUsageDescription was too vague and didn't provide specific usage example
+- **Old String:** "Meeting Cost Calculator uses reminders to send you notifications when meetings reach milestone durations..."
+- **Apple's Feedback:** Must clearly explain HOW the app uses reminders with a specific example
+- **File:** `app.json:31`
+- **Fix Applied:** Updated to: `"This app accesses your reminders to send you milestone notifications during active meetings. For example, when a meeting reaches 15 minutes, you'll receive a notification showing the cost accumulated so far, helping you make decisions about meeting efficiency."`
+
+### Resolution Steps (Oct 17)
+
+1. ✅ Changed button text in TodayScreen.js from "Grant Access" to "Continue"
+2. ✅ Updated NSRemindersUsageDescription in app.json with specific example
+3. ✅ Bumped version from 1.0.12 to 1.0.13
+4. ✅ Committed changes: `758c7c2` and `c519b45`
+5. ✅ Pushed to GitHub
+6. ✅ Built new EAS Build #18
+7. ✅ Verified Build #18 signature (properly signed with Team ID R78YN38525)
+8. ✅ Downloaded IPA to ~/Downloads/MeetingCostCalculator-v1.0.13-build18.ipa
+9. ✅ Uploaded IPA using xcrun altool
+10. ✅ Attached Build 18 to version 1.0.12 in App Store Connect
+11. ✅ Added review notes explaining fixes
+12. ✅ Submitted for review (Oct 17, 5:29 PM)
+
+### App Review Notes Added
+
+```
+Resubmission addressing Guideline 5.1.1 rejection:
+
+1. Changed permission request button text from "Grant Access" to "Continue" to use neutral language that respects user control
+
+2. Updated NSRemindersUsageDescription to clearly explain the feature with a specific example: "This app accesses your reminders to send you milestone notifications during active meetings. For example, when a meeting reaches 15 minutes, you'll receive a notification showing the cost accumulated so far, helping you make decisions about meeting efficiency."
+
+All privacy guideline issues have been resolved in Build 1.0.13 (18).
+```
+
+---
 
 ## Critical Issue: RESOLVED - IPA Signing Confusion
 
@@ -144,7 +204,53 @@ NOT: `codesign -v your-app.ipa` (checks the zip, not the app)
 
 ---
 
+---
+
+## Quick Reference: If Rejected Again
+
+### Common Rejection Reasons & Fixes
+
+**If rejected for permission issues again:**
+1. Check `src/screens/Today/TodayScreen.js` for button text (should be "Continue" or "Next", NOT "Grant Access")
+2. Verify `NSRemindersUsageDescription` in `app.json` is specific and includes an example
+3. Ensure custom permission UI doesn't pressure users before system dialog appears
+
+**If rejected for other Guideline 5.1.1 issues:**
+- Check `NSCalendarsUsageDescription` in `app.json` - must also be specific with example
+- Check all purpose strings for Calendar, Contacts, Photos, etc.
+- Example format: "[Feature name] uses [resource] to [specific action]. For example, [concrete example]."
+
+**General App Store Process:**
+1. Fix code/config → commit → push to GitHub
+2. Build with EAS: `eas build --platform ios --non-interactive`
+3. Wait 5-15 min for build to process in TestFlight
+4. Download IPA: https://expo.dev/accounts/patopopo/projects/meeting-cost-calculator/builds
+5. Upload with: `xcrun altool --upload-app --type ios --file [IPA_PATH] --username singleton33@yahoo.com --password [APP_SPECIFIC_PASSWORD]`
+6. Go to App Store Connect Distribution tab
+7. Add/change build to newest build
+8. Add review notes explaining fixes
+9. Click "Add for Review" → "Submit for Review"
+
+### Important Credentials
+
+- **Apple ID:** singleton33@yahoo.com
+- **Bundle ID:** com.aps.meetingcostcalculator
+- **Team ID:** R78YN38525
+- **Expo Account:** patopopo
+- **GitHub:** https://github.com/apsinbm/Meeting-Cost-Calculator
+- **App Store Connect:** https://appstoreconnect.apple.com
+
+### Key Files to Check
+
+- `src/screens/Today/TodayScreen.js` - Permission UI button text
+- `app.json` - All purpose strings (NSRemindersUsageDescription, NSCalendarsUsageDescription)
+- `package.json` - Version numbers
+- `eas.json` - Build and submit configuration
+
+---
+
 **Contact Info:**
 - Expo Help: https://expo.dev/help
 - App Store Connect: https://appstoreconnect.apple.com
 - Expo Build Dashboard: https://expo.dev/accounts/patopopo/projects/meeting-cost-calculator/builds
+- Apple Developer: https://developer.apple.com/app-store/review/guidelines/
