@@ -233,9 +233,9 @@ These Terms, together with our Privacy Policy, constitute the entire agreement b
 
 For questions about these Terms:
 
-**Email**: [YOUR CONTACT EMAIL]
-**Website**: [YOUR WEBSITE]
-**App Support**: [YOUR SUPPORT URL]
+**Email**: info@atlanticground.com
+**Website**: https://atlanticground.com
+**App Support**: info@atlanticground.com
 
 ## 24. Acknowledgment
 

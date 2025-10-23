@@ -19,20 +19,20 @@ You need to replace placeholder text in the legal documents with your actual inf
 
 #### 1. PRIVACY_POLICY.md
 Find and replace these placeholders:
-- `[YOUR CONTACT EMAIL]` → your email
-- `[YOUR WEBSITE]` → your website URL (or leave blank for now)
-- `[YOUR SUPPORT URL]` → your support page URL (can be same as website)
+- `[YOUR CONTACT EMAIL]` → info@atlanticground.com
+- `[YOUR WEBSITE]` → https://atlanticground.com
+- `[YOUR SUPPORT URL]` → info@atlanticground.com
 
 #### 2. TERMS_OF_SERVICE.md
 Find and replace the same placeholders:
-- `[YOUR CONTACT EMAIL]`
-- `[YOUR WEBSITE]`
-- `[YOUR SUPPORT URL]`
+- `[YOUR CONTACT EMAIL]` → info@atlanticground.com
+- `[YOUR WEBSITE]` → https://atlanticground.com
+- `[YOUR SUPPORT URL]` → info@atlanticground.com
 
 **Example**:
 ```
 Before: **Email**: [YOUR CONTACT EMAIL]
-After:  **Email**: support@yourcompany.com
+After:  **Email**: info@atlanticground.com
 ```
 
 ---
@@ -248,13 +248,10 @@ KEYWORDS:
 meeting cost, productivity, business, time tracker, employee cost, meeting efficiency, salary calculator, business tool
 
 SUPPORT URL:
-[YOUR WEBSITE OR GITHUB PAGES URL]
+https://atlanticground.com
 
 PRIVACY POLICY URL:
-https://[your-username].github.io/meeting-cost-calculator-legal/PRIVACY_POLICY
-
-TERMS OF SERVICE URL:
-https://[your-username].github.io/meeting-cost-calculator-legal/TERMS_OF_SERVICE
+https://github.com/apsinbm/Meeting-Cost-Calculator/blob/master/PRIVACY_POLICY.md
 
 PROMOTIONAL TEXT (Optional, 170 chars):
 Calculate meeting costs in real-time. Track expenses and make data-driven decisions. All data stays on your device - complete privacy guaranteed.
@@ -266,10 +263,10 @@ WHAT'S NEW (Version 1.0.0):
 Initial release! Calculate meeting costs, track expenses in real-time, and make data-driven decisions. Complete privacy - all data stays on your device.
 
 COPYRIGHT:
-2025 [YOUR NAME or COMPANY NAME]
+2025 Atlantic Ground
 
 CONTACT EMAIL:
-[YOUR SUPPORT EMAIL]
+info@atlanticground.com
 
 CONTACT PHONE:
 [YOUR PHONE NUMBER]

@@ -102,7 +102,7 @@ Your sensitive salary and employee data never leaves your device. We have no ser
 
 **SUPPORT**
 
-For questions or support, contact us at [YOUR EMAIL]
+For questions or support, contact us at info@atlanticground.com
 
 ---
 
@@ -181,7 +181,7 @@ You MUST host these documents on a publicly accessible website before submission
 ### 8. App Review Information
 
 #### Contact Information
-- **Email**: [YOUR EMAIL]
+- **Email**: info@atlanticground.com
 - **Phone Number**: [YOUR PHONE]
 - **Name**: [YOUR NAME]
 
@@ -276,7 +276,7 @@ Questions Apple will ask:
 ### 11. Version Information
 
 **Version**: 1.0.0
-**Copyright**: 2025 [YOUR NAME/COMPANY]
+**Copyright**: 2025 Atlantic Ground
 
 **What's New in This Version** (Release Notes):
 ```
@@ -430,8 +430,8 @@ Before submitting, verify:
 ## Support and Contact
 
 **Before Launch**:
-- Set up support email: [YOUR EMAIL]
-- Create support website (optional): [YOUR WEBSITE]
+- Set up support email: info@atlanticground.com
+- Create support website (optional): https://atlanticground.com
 - Prepare FAQ document
 
 **After Launch**:
