@@ -2,7 +2,7 @@
   "expo": {
     "name": "Meeting Cost Calculator",
     "slug": "meeting-cost-calculator",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -55,14 +55,6 @@
             "NSPrivacyCollectedDataTypeTracking": false,
             "NSPrivacyCollectedDataTypePurposes": [
               "NSPrivacyCollectedDataTypePurposeAppFunctionality"
-            ]
-          }
-        ],
-        "NSPrivacyAccessedAPITypes": [
-          {
-            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryCalendars",
-            "NSPrivacyAccessedAPITypeReasons": [
-              "CA92.1"
             ]
           }
         ]
