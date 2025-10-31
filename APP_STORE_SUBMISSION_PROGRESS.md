@@ -1,34 +1,37 @@
 # App Store Submission Progress - Meeting Cost Calculator
 
-**Last Updated:** Oct 17, 2025 at 5:29 PM
+**Last Updated:** Oct 30, 2025 at 3:00 PM
 
 ## Current Status
 
-- **App Version:** 1.0.12 with Build 1.0.13 (18)
-- **Build Number:** 18
-- **Current State:** Waiting for Apple Review (Resubmission #2)
-- **Submitted:** Oct 17, 2025 at 5:29 PM
-- **Submission ID:** dc25b8c1-fe0c-494c-b984-6f9ba14fa743
+- **App Version:** 1.0.14
+- **Build Number:** 20
+- **Current State:** ✅ Waiting for Apple Review (Resubmission #3)
+- **Submitted:** Oct 30, 2025 at 3:00 PM
+- **Submission ID:** TBD (will receive from Apple)
 
 ## Build Information
 
-### Current Build (Resubmission #2 - Oct 17)
-- **Version:** 1.0.13
-- **Build Number:** 18
-- **IPA URL:** https://expo.dev/artifacts/eas/oRaXzXvPbMp5S641JXW7wZ.ipa
-- **Build ID:** b906a1df-4a8f-4580-b994-3792ade8857d
+### Current Build (Resubmission #3 - Oct 30)
+- **Version:** 1.0.14
+- **Build Number:** 20
+- **IPA URL:** https://expo.dev/artifacts/eas/3RwMqcrj8z5bV5yAYWWs6y.ipa
+- **Build ID:** 171cb15a-23f8-4e60-8748-ce98d177fa3a
 - **EAS Build Command:** `eas build --platform ios --non-interactive`
 - **Upload Method:** xcrun altool (iTMSTransporter)
-- **Upload Command:** `xcrun altool --upload-app --type ios --file ~/Downloads/MeetingCostCalculator-v1.0.13-build18.ipa --username singleton33@yahoo.com --password [APP_SPECIFIC_PASSWORD]`
+- **Upload Command:** `xcrun altool --upload-app --type ios --file ~/Downloads/MeetingCostCalculator-v1.0.14-build20.ipa --username singleton33@yahoo.com --password "kuqw-cufs-jkut-ilji"`
+- **Upload Date:** Oct 30, 2025 at 12:49 PM
+- **Delivery UUID:** 82f84e89-6bcc-41d7-92d3-2c8b654a6986
+- **Upload Time:** 35 seconds (17.3MB at 491KB/s)
 - **Node Version:** 20
 - **Bundle ID:** com.aps.meetingcostcalculator
 
-### Previous Build (Rejected)
-- **Version:** 1.0.12
-- **Build Number:** 17
-- **IPA URL:** https://expo.dev/artifacts/eas/w2BuFK4KK13pixN29E3z3n.ipa
-- **Rejection Date:** Oct 17, 2025 at 2:29 PM
-- **Submission ID (Rejected):** ac4ab9b0-a1c8-4c76-84c2-c52d89df1dab
+### Previous Build (Rejected with ITMS-91054)
+- **Version:** 1.0.13
+- **Build Number:** 18
+- **IPA URL:** https://expo.dev/artifacts/eas/oRaXzXvPbMp5S641JXW7wZ.ipa
+- **Rejection Date:** Oct 17, 2025 at 5:30 PM
+- **Rejection Reason:** ITMS-91054 - Invalid API category declaration (calendar)
 
 ## Apple Rejection #1 - Oct 17, 2025 at 2:29 PM
 
@@ -77,6 +80,107 @@ All privacy guideline issues have been resolved in Build 1.0.13 (18).
 
 ---
 
+## Apple Rejection #2 - Oct 17, 2025 at 5:30 PM (ITMS-91054)
+
+### Rejection Reason: Invalid Privacy Manifest API Category Declaration
+
+**Error Code:** ITMS-91054: Invalid API category declaration
+
+**Issue:**
+- **Problem:** App's PrivacyInfo.xcprivacy file contained invalid value `NSPrivacyAccessedAPICategoryCalendars` in NSPrivacyAccessedAPIType key
+- **Why Invalid:** "NSPrivacyAccessedAPICategoryCalendars" is NOT a valid Apple Required Reason API category
+- **Root Cause:** Calendar access was incorrectly declared as a "Required Reason API" when it is NOT
+- **Confusion Source:** Calendar access was declared in `NSPrivacyAccessedAPITypes` array in app.json (lines 61-68)
+
+### Understanding the Confusion
+
+**What is a Required Reason API?**
+- Specific system APIs that Apple requires apps to declare with justification
+- Only 5 valid categories exist:
+  1. NSPrivacyAccessedAPICategoryFileTimestamp
+  2. NSPrivacyAccessedAPICategorySystemBootTime
+  3. NSPrivacyAccessedAPICategoryDiskSpace
+  4. NSPrivacyAccessedAPICategoryActiveKeyboards
+  5. NSPrivacyAccessedAPICategoryUserDefaults
+
+**Why Calendar is NOT a Required Reason API:**
+- Calendar access is a standard permission-based API (like Photos, Contacts)
+- It uses Info.plist usage descriptions: `NSCalendarsUsageDescription`, `NSRemindersUsageDescription`
+- It uses system permission dialogs that users must grant at runtime
+- It does NOT need Privacy Manifest API category declarations
+
+### The Fix Applied (Oct 30, 2025)
+
+**What Was Changed:**
+- **File:** `app.json`
+- **Lines Removed:** 61-68
+- **Removed Code:**
+  ```json
+  "NSPrivacyAccessedAPITypes": [
+    {
+      "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryCalendars",
+      "NSPrivacyAccessedAPITypeReasons": [
+        "CA92.1"
+      ]
+    }
+  ]
+  ```
+
+**What Remains (Correct):**
+- `NSCalendarsUsageDescription` in Info.plist ✅
+- `NSRemindersUsageDescription` in Info.plist ✅
+- `NSPrivacyCollectedDataTypes` (email, salary data) ✅
+- Runtime permission requests using expo-calendar ✅
+
+### Resolution Steps (Oct 30, 2025)
+
+1. ✅ Identified invalid API category in app.json (lines 61-68)
+2. ✅ Removed entire NSPrivacyAccessedAPITypes section
+3. ✅ Verified calendar permissions already properly declared in Info.plist
+4. ✅ Bumped version from 1.0.13 to 1.0.14
+5. ✅ Updated SettingsScreen.js version display
+6. ✅ Committed changes: `85318d7`
+7. ✅ Pushed to GitHub
+8. ✅ Built new EAS Build #20
+9. ✅ Downloaded IPA to ~/Downloads/MeetingCostCalculator-v1.0.14-build20.ipa
+10. ✅ Uploaded IPA using xcrun altool (35 seconds, Delivery UUID: 82f84e89-6bcc-41d7-92d3-2c8b654a6986)
+11. ✅ Attached Build 20 to version 1.0.14 in App Store Connect
+12. ✅ Added review notes explaining the fix
+13. ✅ Submitted for review (Oct 30, 3:00 PM)
+
+### App Review Notes Added
+
+```
+Resubmission addressing ITMS-91054 rejection:
+
+The app incorrectly declared calendar access as a Required Reason API using "NSPrivacyAccessedAPICategoryCalendars" which is not a valid Apple API category.
+
+Calendar access is properly handled through:
+- NSCalendarsUsageDescription in Info.plist (already present and approved in previous submissions)
+- Runtime permission requests using system dialogs
+- No Required Reason API declaration needed
+
+Fix: Removed the invalid NSPrivacyAccessedAPITypes declaration from privacy manifest. Calendar permissions remain properly declared in Info.plist as required.
+
+Build 1.0.14 (20) resolves this issue completely.
+```
+
+### Key Learnings
+
+1. **Privacy Manifest confusion:** NSPrivacyAccessedAPITypes is ONLY for Required Reason APIs (5 specific categories)
+2. **Calendar is NOT Required Reason API:** It uses standard Info.plist permissions and runtime dialogs
+3. **App Store validation is strict:** Invalid API category names are rejected immediately
+4. **Build numbers matter:** Had to use Build 20 after removing Build 18 (rejected) and skipping Build 19
+
+### References
+
+- **Apple Privacy Manifest Documentation:** https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
+- **Apple Required Reason APIs:** https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api
+- **Expo Privacy Manifests:** https://docs.expo.dev/guides/permissions/#ios-privacy-manifests
+- **Email Error:** ITMS-91054 received Oct 17, 2025 at 5:30 PM
+
+---
+
 ## Critical Issue: RESOLVED - IPA Signing Confusion
 
 **Problem:** Initially appeared that EAS Build was producing unsigned IPAs due to codesign verification errors.
@@ -112,28 +216,33 @@ Result: ✅ Properly signed with Team ID R78YN38525
 
 ### Immediate (Next 24-48 hours)
 
-1. **Check App Store Connect Status**
-   - Go to https://appstoreconnect.apple.com
-   - Check current submission status for build #17
-   - Possible states:
-     - ✅ "Waiting for Review" - Everything is fine, just wait
+1. **Wait for Apple Review**
+   - Submitted: Oct 30, 2025 at 3:00 PM
+   - Time frame: 24-48 hours (expect result by Oct 31 or Nov 1)
+   - Current Status: ✅ Waiting for Review
+
+2. **Monitor Email for Updates**
+   - Watch singleton33@yahoo.com for App Store Connect notifications
+   - Possible outcomes:
      - ✅ "In Review" - Apple is actively reviewing
      - ✅ "Pending Developer Release" - APPROVED! Ready to release
      - ❌ "Rejected" - See resolution steps below
 
-2. **Wait for Apple Review Result**
-   - Time frame: 24-48 hours from submission (Oct 16, 8:38 PM)
-   - Expected outcome: **APPROVAL** (build is properly signed)
-   - Watch email for updates from App Store Connect
+### If Apple Approves
 
-### If Apple Rejects (Unlikely Now)
+1. Go to App Store Connect → Meet Cost Calc → Version 1.0.14
+2. Click "Pending Developer Release"
+3. Click "Release" to make app available on App Store
+4. App will appear in App Store within 1-2 hours
 
-Since the build IS properly signed, rejection is unlikely. However, if rejected for other reasons:
+### If Apple Rejects Again
 
 1. Go to App Store Connect → Resolution Center
 2. Read the rejection reason carefully
 3. Address the specific issue mentioned
-4. Resubmit with fixes
+4. Resubmit Build 21+ with fixes
+
+**Note:** If any rejection occurs, note that Build 20 (1.0.14) has ALREADY fixed the ITMS-91054 privacy manifest error. If a NEW error appears, it will be documented and fixed following the same process.
 
 ## Credentials
 

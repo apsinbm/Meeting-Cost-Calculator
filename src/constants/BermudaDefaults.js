@@ -15,8 +15,8 @@ export const BermudaDefaults = {
   employerPensionRate: 5,          // 5% employer match (typical rate)
 
   // Benefits
-  defaultHealthInsuranceMonthly: 500,  // $500/month per employee default (editable for dependents)
-  defaultHealthInsuranceAnnual: 6000,  // $500 × 12 months
+  defaultHealthInsuranceMonthly: 429.62,  // $429.62/month per employee default (editable for dependents)
+  defaultHealthInsuranceAnnual: 5155.44,  // $429.62 × 12 months
 
   // Currency
   defaultCurrency: 'BMD',     // Bermuda Dollar

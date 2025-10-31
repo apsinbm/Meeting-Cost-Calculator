@@ -23,7 +23,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     email: existingEmployee?.email || '',
     annualSalary: existingEmployee?.annualSalary?.toString() || '',
     annualBonus: existingEmployee?.annualBonus?.toString() || '',
-    healthInsuranceAnnual: existingEmployee?.healthInsuranceAnnual?.toString() || '6000',  // $500/month default
+    healthInsuranceAnnual: existingEmployee?.healthInsuranceAnnual?.toString() || '5155.44',  // $429.62/month default
   });
   const [errors, setErrors] = useState({});
   const [costBreakdown, setCostBreakdown] = useState(null);
@@ -36,7 +36,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
           ...employee,
           annualSalary: parseFloat(employee.annualSalary) || 0,
           annualBonus: parseFloat(employee.annualBonus) || 0,
-          healthInsuranceAnnual: parseFloat(employee.healthInsuranceAnnual) || 6000,
+          healthInsuranceAnnual: parseFloat(employee.healthInsuranceAnnual) || 5155.44,
         };
         const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData);
         setCostBreakdown(costs);
@@ -231,12 +231,12 @@ const AddEmployeeScreen = ({ navigation, route }) => {
               value={employee.healthInsuranceAnnual}
               onChangeText={(value) => updateField('healthInsuranceAnnual', value)}
               error={errors.healthInsuranceAnnual}
-              placeholder="6000"
+              placeholder="5155.44"
               keyboardType="numeric"
             />
 
             <AppText variant="caption" color={Colors.textSecondary} style={styles.hint}>
-              Default: $6,000/year ($500/month). Adjust if employee has dependents.
+              Default: $5,155.44/year ($429.62/month). Adjust if employee has dependents.
             </AppText>
           </View>
 

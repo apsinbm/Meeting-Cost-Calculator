@@ -90,7 +90,7 @@ src/
 ```javascript
 // Annual Cost Components:
 totalCompensation = baseSalary + annualBonus
-healthInsurance = 6000                                       // $6,000 annual default (company pays)
+healthInsurance = 5155.44                                    // $5,155.44 annual default (company pays)
 payrollTax = totalCompensation * 0.10                        // Simplified 10%, capped at $1M
 employerPension = baseSalary * 0.05                          // 5% employer match
 socialInsurance = 1957.80                                    // Fixed $1,957.80/year (NOT percentage-based)
@@ -107,12 +107,12 @@ meetingCost = sum(attendee.perMinuteCost * elapsedMinutes) for all attendees
 
 **Example**: Employee with $80K salary + $10K bonus:
 - Total compensation: $90,000
-- Health insurance (company pays): $6,000
+- Health insurance (company pays): $5,155.44
 - Payroll tax (10% of $90K): $9,000
 - Employer pension (5% of $80K): $4,000
 - Social insurance (fixed annual): $1,957.80
-- **Total annual cost: $110,957.80**
-- Hourly: $53.34 | Per-minute: $0.889
+- **Total annual cost: $110,113.24**
+- Hourly: $52.94 | Per-minute: $0.882
 
 ### Actual Bermuda Rates (Documented in "About Calculations")
 
@@ -135,7 +135,7 @@ meetingCost = sum(attendee.perMinuteCost * elapsedMinutes) for all attendees
 - Payroll tax: 10% (simplified from graduated scale)
 - Employer pension: 5% of salary
 - Social insurance: $1,957.80 annually (fixed, not percentage)
-- Health insurance: $6,000 annually (company pays, editable per employee)
+- Health insurance: $5,155.44 annually (company pays, editable per employee)
 - Default currency: BMD (Bermuda Dollar)
 - Work week: 40 hours
 
