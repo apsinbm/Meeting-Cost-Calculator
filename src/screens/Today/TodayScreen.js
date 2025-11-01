@@ -363,10 +363,7 @@ const TodayScreen = ({ navigation }) => {
             Calendar Access
           </AppText>
           <AppText variant="body" color={Colors.textSecondary} style={styles.permissionText}>
-            Grant calendar and reminders access to see scheduled meetings and pre-calculate costs.
-          </AppText>
-          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center', fontStyle: 'italic' }}>
-            Note: iOS requires both Calendar and Reminders permissions
+            Grant calendar access to see scheduled meetings and pre-calculate costs.
           </AppText>
           <AppText variant="body" color={Colors.textSecondary} style={styles.emptyQuote}>
             "The most efficient meeting is the one that never happened."

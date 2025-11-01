@@ -15,20 +15,12 @@ class CalendarService {
 
   /**
    * Request calendar permissions
-   * On iOS, requires both Calendar and Reminders permissions
    */
   async requestPermissions() {
     try {
       // Request calendar permission
       const { status: calendarStatus } = await Calendar.requestCalendarPermissionsAsync();
-
-      // On iOS, also need to request reminders permission
-      if (Platform.OS === 'ios') {
-        const { status: remindersStatus } = await Calendar.requestRemindersPermissionsAsync();
-        this.hasPermission = calendarStatus === 'granted' && remindersStatus === 'granted';
-      } else {
-        this.hasPermission = calendarStatus === 'granted';
-      }
+      this.hasPermission = calendarStatus === 'granted';
 
       return this.hasPermission;
     } catch (error) {
@@ -39,19 +31,11 @@ class CalendarService {
 
   /**
    * Check current permission status
-   * On iOS, checks both Calendar and Reminders permissions
    */
   async checkPermissions() {
     try {
       const { status: calendarStatus } = await Calendar.getCalendarPermissionsAsync();
-
-      // On iOS, also check reminders permission
-      if (Platform.OS === 'ios') {
-        const { status: remindersStatus } = await Calendar.getRemindersPermissionsAsync();
-        this.hasPermission = calendarStatus === 'granted' && remindersStatus === 'granted';
-      } else {
-        this.hasPermission = calendarStatus === 'granted';
-      }
+      this.hasPermission = calendarStatus === 'granted';
 
       return this.hasPermission;
     } catch (error) {
