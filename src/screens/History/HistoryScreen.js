@@ -163,11 +163,27 @@ const HistoryScreen = () => {
       minute: '2-digit',
     });
 
-    // Format duration: show seconds if under 1 minute, otherwise show minutes
-    const actualMinutes = item.actualMinutes;
-    const durationDisplay = actualMinutes < 1
-      ? `${Math.round(actualMinutes * 60)} sec`
-      : `${Math.round(actualMinutes)} min`;
+    // Format duration: convert from minutes, show appropriate format
+    // Use absolute value in case of negative stored values
+    const actualMinutes = Math.abs(item.actualMinutes || 0);
+    const totalSeconds = Math.round(actualMinutes * 60);
+
+    let durationDisplay;
+    if (totalSeconds < 180) {
+      // Under 3 minutes: show seconds
+      durationDisplay = `${totalSeconds} sec`;
+    } else if (totalSeconds < 3600) {
+      // Under 1 hour: show MM:SS
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      durationDisplay = `${mins}:${secs.toString().padStart(2, '0')}`;
+    } else {
+      // Over 1 hour: show HH:MM:SS
+      const hours = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = totalSeconds % 60;
+      durationDisplay = `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
 
     return (
       <Card style={styles.meetingCard}>
@@ -182,7 +198,7 @@ const HistoryScreen = () => {
           </View>
           <View style={styles.meetingCost}>
             <AppText variant="h3" color={Colors.primary}>
-              {EmployeeCostCalculator.formatCurrency(item.actualCost)}
+              {EmployeeCostCalculator.formatCurrency(Math.abs(item.actualCost || 0))}
             </AppText>
             <AppText variant="caption" color={Colors.textSecondary}>
               {durationDisplay}
@@ -221,7 +237,7 @@ const HistoryScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <AppText variant="h2">History</AppText>
@@ -242,7 +258,7 @@ const HistoryScreen = () => {
             <View style={styles.summaryGrid}>
               <View style={styles.summaryItem}>
                 <AppText variant="h2" color={Colors.primary}>
-                  {EmployeeCostCalculator.formatCurrency(summary.totalCost)}
+                  {EmployeeCostCalculator.formatCurrency(Math.abs(summary.totalCost || 0))}
                 </AppText>
                 <AppText variant="caption" color={Colors.textSecondary}>
                   Total Cost
@@ -255,14 +271,14 @@ const HistoryScreen = () => {
                 </AppText>
               </View>
               <View style={styles.summaryItem}>
-                <AppText variant="h2">{Math.round(summary.totalMinutes / 60)}</AppText>
+                <AppText variant="h2">{Math.round(Math.abs(summary.totalMinutes || 0) / 60)}</AppText>
                 <AppText variant="caption" color={Colors.textSecondary}>
                   Hours
                 </AppText>
               </View>
               <View style={styles.summaryItem}>
                 <AppText variant="h2">
-                  {EmployeeCostCalculator.formatCurrency(summary.averageCost)}
+                  {EmployeeCostCalculator.formatCurrency(Math.abs(summary.averageCost || 0))}
                 </AppText>
                 <AppText variant="caption" color={Colors.textSecondary}>
                   Avg/Meeting

@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Alert, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Card } from '../../components';
+import CostMilestoneFlash from '../../components/CostMilestoneFlash';
 import { Colors, Spacing, FontSizes } from '../../constants';
 import MeetingCostCalculator from '../../services/MeetingCostCalculator';
 import MeetingService from '../../services/MeetingService';
 import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
+import AudioService from '../../services/AudioService';
 
 /**
  * Active Meeting Screen
@@ -18,11 +20,13 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [meetingData, setMeetingData] = useState(null);
   const [showEndDialog, setShowEndDialog] = useState(false);
+  const [showFlash, setShowFlash] = useState(false);
   const timerRef = useRef(null);
   const isPausedRef = useRef(false);
   const startTimeRef = useRef(Date.now());
   const pausedTimeRef = useRef(0); // Total accumulated paused time in milliseconds
   const pauseStartRef = useRef(null); // When current pause started
+  const lastCostMilestoneRef = useRef(0); // Track last $100 milestone triggered
 
   useEffect(() => {
     startMeeting();
@@ -122,6 +126,32 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   const elapsedMinutes = elapsedSeconds / 60;
   const realTimeCost = MeetingCostCalculator.calculateRealTimeCost(attendees, elapsedMinutes);
 
+  // Check for $100 cost milestones
+  useEffect(() => {
+    if (isPaused) return;
+
+    const currentCost = realTimeCost.currentCost;
+    const currentMilestone = Math.floor(currentCost / 100);
+
+    // Check if we've crossed a new $100 threshold
+    if (currentMilestone > lastCostMilestoneRef.current && currentCost >= 100) {
+      lastCostMilestoneRef.current = currentMilestone;
+      triggerCostMilestoneAlert();
+    }
+  }, [realTimeCost.currentCost, isPaused]);
+
+  const triggerCostMilestoneAlert = async () => {
+    // Trigger flash animation
+    setShowFlash(true);
+
+    // Play haptic feedback pattern
+    AudioService.playMilestoneAlert();
+  };
+
+  const handleFlashComplete = () => {
+    setShowFlash(false);
+  };
+
   // Calculate progress bar based on current milestone interval
   const milestones = [1, 15, 30, 45, 60, 90, 120];
   let progressPercent = 0;
@@ -144,7 +174,10 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
     : `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* $100 Milestone Flash Overlay */}
+      <CostMilestoneFlash visible={showFlash} onComplete={handleFlashComplete} />
+
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         {/* Meeting Title */}
         <AppText variant="h3" style={styles.title}>
@@ -366,10 +399,12 @@ const styles = StyleSheet.create({
   },
   costDisplay: {
     color: Colors.primary,
-    fontSize: 72,
+    fontSize: 64,
     fontWeight: '700',
-    lineHeight: 86,
+    lineHeight: 76,
     marginBottom: Spacing.xs,
+    flexShrink: 1,
+    textAlign: 'center',
   },
   costDisplayRising: {
     color: Colors.error,  // Red when cost is rising
@@ -384,10 +419,11 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   timeDisplay: {
-    fontSize: 56,
+    fontSize: 48,
     fontWeight: '700',
-    lineHeight: 68,
+    lineHeight: 58,
     marginBottom: Spacing.xs,
+    textAlign: 'center',
   },
   attendeesContainer: {
     alignItems: 'center',

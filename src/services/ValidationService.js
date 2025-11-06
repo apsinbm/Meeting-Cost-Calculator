@@ -71,25 +71,39 @@ class ValidationService {
    * Validate annual bonus
    */
   validateBonus(bonus) {
+    // DEBUG: Log bonus validation
+    console.log('=== ValidationService.validateBonus ===');
+    console.log('Input bonus:', bonus);
+    console.log('Input type:', typeof bonus);
+    console.log('Input length:', bonus?.length);
+
     // Bonus is optional, can be 0
     if (!bonus || bonus === '') {
+      console.log('Bonus is empty - valid');
       return { valid: true };
     }
 
     const numBonus = parseFloat(bonus);
+    console.log('parseFloat(bonus):', numBonus);
+    console.log('Parsed type:', typeof numBonus);
+    console.log('ValidationRules.bonus.max:', ValidationRules.bonus.max);
 
     if (isNaN(numBonus)) {
+      console.log('Bonus is NaN - invalid');
       return { valid: false, error: 'Bonus must be a number' };
     }
 
     if (numBonus < ValidationRules.bonus.min) {
+      console.log('Bonus is negative - invalid');
       return { valid: false, error: 'Bonus cannot be negative' };
     }
 
     if (numBonus > ValidationRules.bonus.max) {
+      console.log('Bonus exceeds max - invalid');
       return { valid: false, error: `Bonus cannot exceed $${ValidationRules.bonus.max.toLocaleString()}` };
     }
 
+    console.log('Bonus validation passed');
     return { valid: true };
   }
 

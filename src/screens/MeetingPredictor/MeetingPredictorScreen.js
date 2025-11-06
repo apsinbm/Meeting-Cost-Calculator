@@ -68,7 +68,7 @@ const MeetingPredictorScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Attendee Picker Modal */}
       <AttendeePickerModal
         visible={modalVisible}
@@ -89,8 +89,8 @@ const MeetingPredictorScreen = ({ navigation }) => {
 
       {/* Header */}
       <View style={styles.header}>
-        <AppText variant="h2">Meeting Cost Calculator</AppText>
-        <AppText variant="bodySmall" color={Colors.textSecondary}>
+        <AppText variant="h3" style={styles.headerTitle}>Meeting Cost Calculator</AppText>
+        <AppText variant="caption" color={Colors.textSecondary} style={styles.headerSubtitle}>
           Plan smarter meetings
         </AppText>
       </View>
@@ -267,10 +267,20 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.sm,
     backgroundColor: Colors.background,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  headerSubtitle: {
+    fontSize: 13,
+    marginTop: 0,
   },
   content: {
     flex: 1,

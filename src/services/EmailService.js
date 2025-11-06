@@ -93,7 +93,7 @@ class EmailService {
     top10.forEach((meeting, index) => {
       const date = new Date(meeting.actualStart || meeting.scheduledStart).toLocaleDateString();
       const cost = EmployeeCostCalculator.formatCurrency(meeting.actualCost || 0);
-      const duration = meeting.actualMinutes || 0;
+      const duration = (meeting.actualMinutes || 0).toFixed(2);
 
       body += `${index + 1}. ${meeting.title}\n`;
       body += `   Date: ${date} | Duration: ${duration} min | Cost: ${cost}\n`;

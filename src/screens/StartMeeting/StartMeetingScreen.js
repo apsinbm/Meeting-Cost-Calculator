@@ -68,7 +68,7 @@ const StartMeetingScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Attendee Picker Modal */}
       <AttendeePickerModal
         visible={modalVisible}

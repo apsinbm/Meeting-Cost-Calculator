@@ -59,9 +59,10 @@ const Button = ({
 
 const styles = StyleSheet.create({
   button: {
-    height: 48,
+    minHeight: 48,
     borderRadius: 8,
     paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: Colors.black,
@@ -73,6 +74,7 @@ const styles = StyleSheet.create({
   buttonText: {
     ...TextStyles.button,
     textAlign: 'center',
+    flexShrink: 1,
   },
 });
 

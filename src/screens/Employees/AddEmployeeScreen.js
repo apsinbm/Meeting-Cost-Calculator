@@ -62,12 +62,10 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     const nameValidation = ValidationService.validateName(employee.name);
     if (!nameValidation.valid) newErrors.name = nameValidation.error;
 
-    const roleValidation = ValidationService.validateRole(employee.role);
-    if (!roleValidation.valid) newErrors.role = roleValidation.error;
-
-    if (employee.email) {
-      const emailValidation = ValidationService.validateEmail(employee.email);
-      if (!emailValidation.valid) newErrors.email = emailValidation.error;
+    // Role is now optional
+    if (employee.role) {
+      const roleValidation = ValidationService.validateRole(employee.role);
+      if (!roleValidation.valid) newErrors.role = roleValidation.error;
     }
 
     const salaryValidation = ValidationService.validateSalary(employee.annualSalary);
@@ -90,6 +88,13 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     setLoading(true);
 
     try {
+      // DEBUG: Log the employee data before sending to service
+      console.log('=== AddEmployeeScreen.handleSave ===');
+      console.log('Raw employee data:', JSON.stringify(employee, null, 2));
+      console.log('annualBonus type:', typeof employee.annualBonus);
+      console.log('annualBonus value:', employee.annualBonus);
+      console.log('annualBonus length:', employee.annualBonus?.length);
+
       const result = isEditing
         ? await EmployeeService.updateEmployee(existingEmployee.id, employee)
         : await EmployeeService.addEmployee(employee);
@@ -122,7 +127,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -169,26 +174,13 @@ const AddEmployeeScreen = ({ navigation, route }) => {
             />
 
             <Input
-              label="Role or Title *"
+              label="Role or Title (optional)"
               value={employee.role}
               onChangeText={(value) => updateField('role', value)}
               error={errors.role}
               placeholder="Manager"
               autoCapitalize="words"
             />
-
-            <Input
-              label="Email Address (optional)"
-              value={employee.email}
-              onChangeText={(value) => updateField('email', value)}
-              error={errors.email}
-              placeholder="sarah.chen@company.com"
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <AppText variant="caption" color={Colors.textSecondary} style={styles.hint}>
-              Email helps match calendar attendees automatically
-            </AppText>
           </View>
 
           {/* Compensation Section */}

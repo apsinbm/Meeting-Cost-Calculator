@@ -3,7 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 import MeetingPredictorScreen from '../screens/MeetingPredictor/MeetingPredictorScreen';
 import StartMeetingScreen from '../screens/StartMeeting/StartMeetingScreen';
-import TodayScreen from '../screens/Today/TodayScreen';
 import HistoryScreen from '../screens/History/HistoryScreen';
 import SettingsScreen from '../screens/Settings/SettingsScreen';
 import { Colors, FontSizes } from '../constants';
@@ -16,7 +15,7 @@ const ICON_COLOR_INACTIVE = '#94A3B8'; // Light gray
 
 /**
  * Bottom Tab Navigator
- * Main app navigation with 5 tabs: Calculate, Start, Calendar, History, Settings
+ * Main app navigation with 4 tabs: Calculate, Start, History, Settings
  */
 const TabNavigator = () => {
   return (
@@ -29,16 +28,18 @@ const TabNavigator = () => {
           borderTopWidth: 1,
           borderTopColor: Colors.border,
           backgroundColor: Colors.background,
-          height: 85,
-          paddingBottom: 20,
-          paddingTop: 8,
-          paddingHorizontal: 8,
+          height: 70,
+          paddingBottom: 8,
+          paddingTop: 4,
         },
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: '600',
-          marginTop: 2,
-          marginBottom: 0,
+          marginTop: 0,
+          marginBottom: 4,
+        },
+        tabBarIconStyle: {
+          marginTop: 4,
         },
       }}
     >
@@ -48,17 +49,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'Calculate',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 18, color, fontWeight: 'bold' }}>123</Text>
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Calendar"
-        component={TodayScreen}
-        options={{
-          tabBarLabel: 'Calendar',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 22, color, fontWeight: 'bold' }}>☷</Text>
+            <Text style={{ fontSize: 16, color, fontWeight: 'bold' }}>123</Text>
           ),
         }}
       />
@@ -68,7 +59,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'Start',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 28, color, fontWeight: 'bold' }}>▶</Text>
+            <Text style={{ fontSize: 24, color, fontWeight: 'bold' }}>▶</Text>
           ),
         }}
       />
@@ -78,7 +69,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 26, color, fontWeight: 'bold' }}>◔</Text>
+            <Text style={{ fontSize: 22, color, fontWeight: 'bold' }}>◔</Text>
           ),
         }}
       />
@@ -88,7 +79,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 24, color, fontWeight: 'bold' }}>⚙</Text>
+            <Text style={{ fontSize: 20, color, fontWeight: 'bold' }}>⚙</Text>
           ),
         }}
       />

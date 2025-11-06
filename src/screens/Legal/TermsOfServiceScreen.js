@@ -10,7 +10,7 @@ import { Colors, Spacing } from '../../constants';
  */
 const TermsOfServiceScreen = ({ navigation }) => {
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>

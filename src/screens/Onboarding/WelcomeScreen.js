@@ -27,8 +27,8 @@ const WelcomeScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <View style={styles.scrollContent}>
         {/* Meeting illustration */}
         <View style={styles.logoContainer}>
           <Image
@@ -56,6 +56,11 @@ const WelcomeScreen = ({ navigation }) => {
           <BenefitItem text="Complete privacy - data never leaves device" />
           <BenefitItem text="Accurate costs with true employment expenses" />
         </View>
+
+        {/* Motivational Quote */}
+        <AppText variant="body" color={Colors.textSecondary} style={styles.quote}>
+          "The most efficient meeting is often the one that never takes place."
+        </AppText>
       </View>
 
       {/* Continue Button */}
@@ -87,10 +92,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  content: {
+  scrollContent: {
     flex: 1,
-    paddingHorizontal: scaledSpacing(Spacing.md),
-    paddingTop: scaledSpacing(Spacing.lg),
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxl,
     alignItems: 'center',
     justifyContent: 'flex-start',
     maxWidth: getMaxContentWidth(),
@@ -98,58 +103,76 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   logoContainer: {
-    marginBottom: scaledSpacing(Spacing.lg),
+    marginBottom: Spacing.lg,
     alignItems: 'center',
   },
   illustration: {
-    ...scaledImageDimensions(220, 220),
+    width: 180,
+    height: 180,
   },
   headlineContainer: {
     width: '100%',
-    marginBottom: scaledSpacing(Spacing.md),
-    paddingHorizontal: scaledSpacing(Spacing.sm),
+    marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
   },
   headline: {
     textAlign: 'center',
-    fontSize: scaledFontSize(32),
-    lineHeight: scaledFontSize(32) * 1.3,
+    fontSize: 28,
+    lineHeight: 34,
+    fontWeight: '700',
   },
   subheadline: {
     textAlign: 'center',
-    marginBottom: scaledSpacing(Spacing.xl),
-    fontSize: scaledFontSize(16),
+    marginBottom: Spacing.lg,
+    fontSize: 15,
+    lineHeight: 21,
+    paddingHorizontal: Spacing.sm,
   },
   benefitsContainer: {
     width: '100%',
-    marginTop: scaledSpacing(Spacing.lg),
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.xs,
   },
   benefitItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: scaledSpacing(Spacing.md),
+    marginBottom: Spacing.md,
   },
   bullet: {
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: Colors.primary,
-    marginTop: scaledSpacing(8),
-    marginRight: scaledSpacing(Spacing.sm),
+    marginTop: 7,
+    marginRight: Spacing.sm,
+    flexShrink: 0,
   },
   benefitText: {
     flex: 1,
-    fontSize: scaledFontSize(16),
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  quote: {
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    fontSize: 16,
+    lineHeight: 22,
   },
   footer: {
-    paddingHorizontal: scaledSpacing(Spacing.md),
-    paddingBottom: scaledSpacing(Spacing.md),
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
     width: '100%',
     alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+    backgroundColor: Colors.background,
   },
   footerHint: {
     textAlign: 'center',
-    marginTop: scaledSpacing(Spacing.sm),
-    fontSize: scaledFontSize(12),
+    marginTop: Spacing.sm,
+    fontSize: 12,
   },
 });
 

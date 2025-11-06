@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, EditTextModal, CurrencyPickerModal } from '../../components';
@@ -110,13 +110,6 @@ const SettingsScreen = ({ navigation }) => {
     );
   };
 
-  const handleManageCalendarPermissions = () => {
-    Alert.alert(
-      'Calendar Permissions',
-      'To manage calendar permissions, go to:\n\nSettings → Privacy & Security → Calendars → Meeting Cost Calculator\n\nYou can enable or disable calendar access there.',
-      [{ text: 'Open Settings', onPress: () => Linking.openSettings() }, { text: 'Cancel', style: 'cancel' }]
-    );
-  };
 
   const handleExportEmployees = async () => {
     try {
@@ -159,7 +152,7 @@ const SettingsScreen = ({ navigation }) => {
   const currencyInfo = CompanyService.getCurrency(companySettings.currency);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Modals */}
       <EditTextModal
         visible={editNameModalVisible}
@@ -269,16 +262,11 @@ const SettingsScreen = ({ navigation }) => {
           )}
         </View>
 
-        {/* Privacy & Permissions Section */}
+        {/* Privacy & Data Section */}
         <View style={styles.section}>
           <AppText variant="h3" style={styles.sectionTitle}>
-            Privacy & Permissions
+            Privacy & Data
           </AppText>
-          <SettingsItem
-            title="Calendar Access"
-            value="Manage permissions"
-            onPress={handleManageCalendarPermissions}
-          />
           <SettingsItem
             title="Export All Data"
             value="Employees & meetings"
@@ -329,10 +317,13 @@ const SettingsScreen = ({ navigation }) => {
             }}
           />
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center' }}>
-            Version 1.0.14
+            Version 1.0.16
           </AppText>
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs, textAlign: 'center' }}>
             Your data never leaves your device
+          </AppText>
+          <AppText variant="body" color={Colors.textSecondary} style={{ marginTop: Spacing.lg, textAlign: 'center', fontStyle: 'italic', paddingHorizontal: Spacing.lg }}>
+            "The most efficient meeting is the one that never happened."
           </AppText>
         </View>
 
@@ -346,13 +337,15 @@ const SettingsItem = ({ title, value, onPress, disabled = false }) => (
   <TouchableOpacity onPress={disabled ? undefined : onPress} disabled={disabled} activeOpacity={disabled ? 1 : 0.7}>
     <Card style={styles.settingsItem}>
       <View style={styles.settingsItemContent}>
-        <AppText variant="body" color={disabled ? Colors.textSecondary : Colors.textPrimary}>{title}</AppText>
+        <AppText variant="body" color={disabled ? Colors.textSecondary : Colors.textPrimary} style={styles.settingsItemTitle}>
+          {title}
+        </AppText>
         <View style={styles.settingsItemValue}>
-          <AppText variant="body" color={Colors.textSecondary}>
+          <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.settingsItemValueText} numberOfLines={1}>
             {value}
           </AppText>
           {!disabled && (
-            <AppText variant="body" color={Colors.textSecondary}>
+            <AppText variant="body" color={Colors.textSecondary} style={styles.settingsItemArrow}>
               {' ›'}
             </AppText>
           )}
@@ -392,10 +385,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  settingsItemTitle: {
+    flex: 1,
+    marginRight: Spacing.xs,
   },
   settingsItemValue: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 1,
+    maxWidth: '50%',
+  },
+  settingsItemValueText: {
+    textAlign: 'right',
+    flexShrink: 1,
+  },
+  settingsItemArrow: {
+    marginLeft: 4,
+    flexShrink: 0,
   },
 });
 

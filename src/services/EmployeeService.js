@@ -38,9 +38,16 @@ class EmployeeService {
    */
   async addEmployee(employeeData) {
     try {
+      // DEBUG: Log received data
+      console.log('=== EmployeeService.addEmployee ===');
+      console.log('Received employeeData:', JSON.stringify(employeeData, null, 2));
+      console.log('annualBonus raw:', employeeData.annualBonus);
+      console.log('annualBonus type:', typeof employeeData.annualBonus);
+
       // Validate employee data
       const validation = ValidationService.validateEmployee(employeeData);
       if (!validation.valid) {
+        console.log('Validation failed:', validation.errors);
         return {
           success: false,
           errors: validation.errors,
@@ -53,6 +60,11 @@ class EmployeeService {
       // Calculate costs
       const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData, settings);
 
+      // DEBUG: Log parsed values
+      const parsedBonus = parseFloat(employeeData.annualBonus) || 0;
+      console.log('parseFloat(annualBonus):', parsedBonus);
+      console.log('Parsed bonus type:', typeof parsedBonus);
+
       // Create employee object
       const employee = {
         id: this._generateId(),
@@ -60,7 +72,7 @@ class EmployeeService {
         role: employeeData.role.trim(),
         email: employeeData.email ? employeeData.email.trim().toLowerCase() : '',
         annualSalary: parseFloat(employeeData.annualSalary),
-        annualBonus: parseFloat(employeeData.annualBonus) || 0,
+        annualBonus: parsedBonus,
         healthInsuranceAnnual: parseFloat(employeeData.healthInsuranceAnnual) || 5155.44,
         hourlyCost: costs.hourlyCost,
         perMinuteCost: costs.perMinuteCost,
@@ -68,6 +80,8 @@ class EmployeeService {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
+
+      console.log('Final employee object bonus:', employee.annualBonus);
 
       // Get existing employees
       const employees = await this.getEmployees();
