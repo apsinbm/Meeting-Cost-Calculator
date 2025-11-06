@@ -144,7 +144,7 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
     // Trigger flash animation
     setShowFlash(true);
 
-    // Play haptic feedback pattern
+    // Play haptic feedback pattern and audio alert
     AudioService.playMilestoneAlert();
   };
 

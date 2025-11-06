@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { StyleSheet, Animated } from 'react-native';
 import { Colors } from '../constants';
 
 /**
- * Full-screen flash animation for $1000 cost milestones
- * Animates: white -> red -> white -> red in quick succession
+ * Full-screen flash animation for $100 cost milestones
+ * Animates: white -> red -> white -> red -> white -> red -> white (7 flashes)
  */
 const CostMilestoneFlash = ({ visible, onComplete }) => {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -18,16 +18,11 @@ const CostMilestoneFlash = ({ visible, onComplete }) => {
   }, [visible]);
 
   const startFlashSequence = () => {
-    // Total sequence: 7 flashes (white, red, white, red, white, red, white)
-    // Each flash: 150ms visible, 50ms gap = 200ms per flash
-    // Total duration: ~1400ms
-
     const flashDuration = 150;
     const gapDuration = 50;
 
     const performFlash = (flashNumber) => {
       if (flashNumber >= 7) {
-        // Sequence complete
         if (onComplete) {
           onComplete();
         }
@@ -36,21 +31,17 @@ const CostMilestoneFlash = ({ visible, onComplete }) => {
 
       setColorIndex(flashNumber);
 
-      // Fade in
       Animated.timing(opacity, {
         toValue: 1,
         duration: 50,
         useNativeDriver: true,
       }).start(() => {
-        // Hold briefly
         setTimeout(() => {
-          // Fade out
           Animated.timing(opacity, {
             toValue: 0,
             duration: 50,
             useNativeDriver: true,
           }).start(() => {
-            // Gap before next flash
             setTimeout(() => {
               performFlash(flashNumber + 1);
             }, gapDuration);
@@ -66,7 +57,6 @@ const CostMilestoneFlash = ({ visible, onComplete }) => {
     return null;
   }
 
-  // Alternate between white and red
   const backgroundColor = colorIndex % 2 === 0 ? Colors.white : Colors.error;
 
   return (
