@@ -1,40 +1,88 @@
 /**
- * iPad Optimization Utility
+ * Device Optimization Utility
  * Provides device-aware sizing for responsive design
- * iPhone sizes remain unchanged; iPad gets enhanced sizing
+ * Handles both iPhone and iPad screen sizes for optimal layout
  */
 
 import { Platform, Dimensions } from 'react-native';
 
-const isIPad = Platform.isPad || (Platform.OS === 'ios' && Dimensions.get('window').width > 600);
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+// Determine device type
+const isIPad = Platform.isPad || (Platform.OS === 'ios' && screenWidth > 600);
+
+// iPhone screen size categories
+const isSmallPhone = Platform.OS === 'ios' && !isIPad && screenWidth < 375; // iPhone SE, older models
+const isMediumPhone = Platform.OS === 'ios' && !isIPad && screenWidth >= 375 && screenWidth <= 414; // iPhone 13, 14
+const isLargePhone = Platform.OS === 'ios' && !isIPad && screenWidth > 414; // iPhone Pro Max
 
 /**
- * Scale spacing values for iPad
- * @param {number} baseValue - Base spacing value for iPhone
- * @returns {number} - Scaled value for iPad, or original for iPhone
+ * Get device scaling factor for responsive design
+ * Returns multiplier based on screen size
  */
-export const scaledSpacing = (baseValue) => {
-  return isIPad ? baseValue * 1.5 : baseValue;
+export const getDeviceScaleFactor = () => {
+  if (isIPad) return 1.5;
+  if (isSmallPhone) return 0.9; // Small iPhones get slightly reduced sizes
+  if (isLargePhone) return 1.1; // Large iPhones get slightly increased sizes
+  return 1.0; // Medium iPhones stay at base size
 };
 
 /**
- * Scale font sizes for iPad
- * @param {number} baseFontSize - Base font size for iPhone
- * @returns {number} - Scaled font size for iPad, or original for iPhone
+ * Scale spacing values based on device type
+ * @param {number} baseValue - Base spacing value
+ * @returns {number} - Scaled value for device
+ */
+export const scaledSpacing = (baseValue) => {
+  const scaleFactor = getDeviceScaleFactor();
+  return baseValue * scaleFactor;
+};
+
+/**
+ * Scale font sizes based on device type
+ * Responsive scaling for different iPhone models and iPad
+ * @param {number} baseFontSize - Base font size
+ * @returns {number} - Scaled font size for device
  */
 export const scaledFontSize = (baseFontSize) => {
-  if (!isIPad) return baseFontSize;
+  if (isIPad) {
+    // Scale large fonts more aggressively for iPad (headline, title)
+    if (baseFontSize >= 32) {
+      return baseFontSize * 1.6;
+    }
+    // Scale medium fonts moderately
+    if (baseFontSize >= 18) {
+      return baseFontSize * 1.4;
+    }
+    // Scale small fonts slightly
+    return baseFontSize * 1.2;
+  }
 
-  // Scale large fonts more aggressively for iPad (headline, title)
-  if (baseFontSize >= 32) {
-    return baseFontSize * 1.6;
+  // iPhone scaling based on screen size
+  if (isSmallPhone) {
+    // Small phones: reduce large fonts more, keep small fonts closer to base
+    if (baseFontSize >= 32) {
+      return baseFontSize * 0.85;
+    }
+    if (baseFontSize >= 20) {
+      return baseFontSize * 0.9;
+    }
+    return baseFontSize * 0.95;
   }
-  // Scale medium fonts moderately
-  if (baseFontSize >= 18) {
-    return baseFontSize * 1.4;
+
+  if (isLargePhone) {
+    // Large phones: increase slightly for better readability
+    if (baseFontSize >= 32) {
+      return baseFontSize * 1.15;
+    }
+    if (baseFontSize >= 20) {
+      return baseFontSize * 1.1;
+    }
+    return baseFontSize * 1.05;
   }
-  // Scale small fonts slightly
-  return baseFontSize * 1.2;
+
+  // Medium phones: return base size
+  return baseFontSize;
 };
 
 /**
@@ -65,18 +113,17 @@ export const iPadFontSizes = {
 };
 
 /**
- * Get iPad-optimized image dimensions
- * @param {number} baseWidth - Base width for iPhone
- * @param {number} baseHeight - Base height for iPhone
- * @returns {object} - { width, height } scaled for iPad
+ * Get device-optimized image dimensions
+ * Responsive scaling for different device sizes
+ * @param {number} baseWidth - Base width for medium iPhone
+ * @param {number} baseHeight - Base height for medium iPhone
+ * @returns {object} - { width, height } scaled for device
  */
 export const scaledImageDimensions = (baseWidth, baseHeight) => {
-  if (!isIPad) {
-    return { width: baseWidth, height: baseHeight };
-  }
+  const scaleFactor = getDeviceScaleFactor();
   return {
-    width: baseWidth * 1.4,
-    height: baseHeight * 1.4,
+    width: baseWidth * scaleFactor,
+    height: baseHeight * scaleFactor,
   };
 };
 
@@ -97,6 +144,21 @@ export const getMaxContentWidth = () => {
  */
 export const getIsIPad = () => isIPad;
 
+/**
+ * Check if device is a small iPhone (SE, older models)
+ */
+export const getIsSmallPhone = () => isSmallPhone;
+
+/**
+ * Check if device is a medium iPhone (13, 14)
+ */
+export const getIsMediumPhone = () => isMediumPhone;
+
+/**
+ * Check if device is a large iPhone (Pro Max)
+ */
+export const getIsLargePhone = () => isLargePhone;
+
 export default {
   scaledSpacing,
   scaledFontSize,
@@ -105,4 +167,8 @@ export default {
   scaledImageDimensions,
   getMaxContentWidth,
   getIsIPad,
+  getIsSmallPhone,
+  getIsMediumPhone,
+  getIsLargePhone,
+  getDeviceScaleFactor,
 };

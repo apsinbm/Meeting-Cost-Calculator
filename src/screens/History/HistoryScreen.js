@@ -11,6 +11,29 @@ import EmailService from '../../services/EmailService';
 import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
 
 /**
+ * Format time duration to HH:MM:SS format with abbreviations
+ * @param {number} totalMinutes - Total minutes
+ * @returns {string} Formatted time like "1h 23m 45s"
+ */
+const formatTimeDuration = (totalMinutes) => {
+  if (!totalMinutes || totalMinutes <= 0) {
+    return '0m 0s';
+  }
+
+  const totalSeconds = Math.round(totalMinutes * 60);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const parts = [];
+  if (hours > 0) parts.push(`${hours}h`);
+  if (minutes > 0) parts.push(`${minutes}m`);
+  if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
+
+  return parts.join(' ');
+};
+
+/**
  * History Screen
  * Shows past meetings with filtering and analysis
  */
@@ -271,9 +294,9 @@ const HistoryScreen = () => {
                 </AppText>
               </View>
               <View style={styles.summaryItem}>
-                <AppText variant="h2">{Math.round(Math.abs(summary.totalMinutes || 0) / 60)}</AppText>
+                <AppText variant="h2">{formatTimeDuration(Math.abs(summary.totalMinutes || 0))}</AppText>
                 <AppText variant="caption" color={Colors.textSecondary}>
-                  Hours
+                  Time
                 </AppText>
               </View>
               <View style={styles.summaryItem}>
@@ -327,18 +350,18 @@ const HistoryScreen = () => {
             </View>
           )
         }
+        ListFooterComponent={
+          meetings.length > 0 ? (
+            <View style={styles.listFooter}>
+              <Button
+                title="Delete All Meetings"
+                onPress={handleDeleteAllMeetings}
+                style={styles.deleteAllButton}
+              />
+            </View>
+          ) : null
+        }
       />
-
-      {/* Delete All Button */}
-      {meetings.length > 0 && (
-        <View style={styles.deleteAllContainer}>
-          <Button
-            title="Delete All Meetings"
-            onPress={handleDeleteAllMeetings}
-            style={styles.deleteAllButton}
-          />
-        </View>
-      )}
 
       {/* Edit Duration Modal */}
       <Modal
@@ -532,7 +555,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    fontSize: 16,
+    fontSize: 14,  // reduced from 16
     color: Colors.text,
     backgroundColor: Colors.background,
   },
@@ -543,12 +566,9 @@ const styles = StyleSheet.create({
   modalButton: {
     flex: 1,
   },
-  deleteAllContainer: {
+  listFooter: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.background,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
   deleteAllButton: {
     backgroundColor: Colors.error,

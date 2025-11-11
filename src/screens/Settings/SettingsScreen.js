@@ -4,7 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, EditTextModal, CurrencyPickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { BermudaDefaults } from '../../constants';
 import EmployeeService from '../../services/EmployeeService';
+import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
 import CompanyService from '../../services/CompanyService';
 import MeetingService from '../../services/MeetingService';
 import StorageService from '../../services/StorageService';
@@ -237,10 +239,34 @@ const SettingsScreen = ({ navigation }) => {
           />
           <SettingsItem
             title="Health Insurance"
-            value="$500/month ($6,000/year)"
+            value="8 plan options per employee"
             onPress={() => {}}
             disabled
           />
+        </View>
+
+        {/* Health Insurance Plans Detail */}
+        <View style={styles.section}>
+          <AppText variant="h3" style={styles.sectionTitle}>
+            Health Insurance Plans
+          </AppText>
+          <AppText variant="bodySmall" color={Colors.textSecondary} style={{ marginBottom: Spacing.md }}>
+            Employees select one plan during setup. Costs included in meeting calculations.
+          </AppText>
+          {BermudaDefaults.healthInsurancePlans.map((plan, index) => (
+            <Card key={index} style={styles.planInfoCard}>
+              <View style={styles.planInfoRow}>
+                <View style={styles.planInfoContent}>
+                  <AppText variant="bodySmall" style={styles.planInfoTitle}>
+                    {plan.name}
+                  </AppText>
+                  <AppText variant="caption" color={Colors.textSecondary}>
+                    {EmployeeCostCalculator.formatCurrency(plan.monthly)}/mo • {EmployeeCostCalculator.formatCurrency(plan.annual)}/year
+                  </AppText>
+                </View>
+              </View>
+            </Card>
+          ))}
         </View>
 
         {/* Employees Section */}
@@ -253,13 +279,6 @@ const SettingsScreen = ({ navigation }) => {
             value={employeeCount === 0 ? 'No employees yet' : `${employeeCount} employee${employeeCount !== 1 ? 's' : ''}`}
             onPress={() => navigation.navigate('EmployeeList')}
           />
-          {employeeCount > 0 && (
-            <SettingsItem
-              title="Export Employees"
-              value="Download as CSV"
-              onPress={handleExportEmployees}
-            />
-          )}
         </View>
 
         {/* Privacy & Data Section */}
@@ -316,13 +335,13 @@ const SettingsScreen = ({ navigation }) => {
               }
             }}
           />
-          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center' }}>
-            Version 1.0.16
+          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center', fontSize: 9 }}>
+            Version 1.0.20
           </AppText>
-          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs, textAlign: 'center' }}>
+          <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs, textAlign: 'center', fontSize: 9 }}>
             Your data never leaves your device
           </AppText>
-          <AppText variant="body" color={Colors.textSecondary} style={{ marginTop: Spacing.lg, textAlign: 'center', fontStyle: 'italic', paddingHorizontal: Spacing.lg }}>
+          <AppText variant="body" color={Colors.textSecondary} style={{ marginTop: Spacing.lg, textAlign: 'center', fontStyle: 'italic', paddingHorizontal: Spacing.lg, fontSize: 12.6 }}>
             "The most efficient meeting is the one that never happened."
           </AppText>
         </View>
@@ -341,7 +360,7 @@ const SettingsItem = ({ title, value, onPress, disabled = false }) => (
           {title}
         </AppText>
         <View style={styles.settingsItemValue}>
-          <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.settingsItemValueText} numberOfLines={1}>
+          <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.settingsItemValueText} numberOfLines={1} adjustsFontSizeToFit>
             {value}
           </AppText>
           {!disabled && (
@@ -376,6 +395,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     paddingHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
+    fontSize: 15.3,  // h3 (17) * 0.9
   },
   settingsItem: {
     marginBottom: 1,
@@ -390,20 +410,40 @@ const styles = StyleSheet.create({
   settingsItemTitle: {
     flex: 1,
     marginRight: Spacing.xs,
+    fontSize: 12.6,  // body (14) * 0.9
   },
   settingsItemValue: {
     flexDirection: 'row',
     alignItems: 'center',
     flexShrink: 1,
-    maxWidth: '50%',
+    maxWidth: '60%',  // increased from 50% to prevent cutting off numbers
   },
   settingsItemValueText: {
     textAlign: 'right',
     flexShrink: 1,
+    flex: 1,  // allow text to take up available space
+    fontSize: 10.8,  // bodySmall (12) * 0.9
   },
   settingsItemArrow: {
     marginLeft: 4,
     flexShrink: 0,
+    fontSize: 12.6,  // body (14) * 0.9
+  },
+  planInfoCard: {
+    marginBottom: Spacing.xs,
+    borderRadius: 4,
+  },
+  planInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  planInfoContent: {
+    flex: 1,
+  },
+  planInfoTitle: {
+    fontWeight: '500',
+    marginBottom: Spacing.xs,
   },
 });
 

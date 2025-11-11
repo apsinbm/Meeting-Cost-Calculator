@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Input, AppText, Card } from '../../components';
+import { Button, Input, AppText, Card, HealthInsurancePickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { BermudaDefaults } from '../../constants';
 import EmployeeService from '../../services/EmployeeService';
 import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
 import ValidationService from '../../services/ValidationService';
@@ -23,10 +24,13 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     email: existingEmployee?.email || '',
     annualSalary: existingEmployee?.annualSalary?.toString() || '',
     annualBonus: existingEmployee?.annualBonus?.toString() || '',
-    healthInsuranceAnnual: existingEmployee?.healthInsuranceAnnual?.toString() || '5155.44',  // $429.62/month default
+    healthInsurancePlan: existingEmployee?.healthInsurancePlan || BermudaDefaults.defaultHealthInsurancePlan,
+    healthInsuranceMonthly: existingEmployee?.healthInsuranceMonthly || BermudaDefaults.defaultHealthInsuranceMonthly,
+    healthInsuranceAnnual: existingEmployee?.healthInsuranceAnnual || BermudaDefaults.defaultHealthInsuranceAnnual,
   });
   const [errors, setErrors] = useState({});
   const [costBreakdown, setCostBreakdown] = useState(null);
+  const [showHealthInsuranceModal, setShowHealthInsuranceModal] = useState(false);
 
   // Calculate costs whenever inputs change
   useEffect(() => {
@@ -36,7 +40,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
           ...employee,
           annualSalary: parseFloat(employee.annualSalary) || 0,
           annualBonus: parseFloat(employee.annualBonus) || 0,
-          healthInsuranceAnnual: parseFloat(employee.healthInsuranceAnnual) || 5155.44,
+          healthInsuranceAnnual: parseFloat(employee.healthInsuranceAnnual) || BermudaDefaults.defaultHealthInsuranceAnnual,
         };
         const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData);
         setCostBreakdown(costs);
@@ -46,7 +50,7 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     } else {
       setCostBreakdown(null);
     }
-  }, [employee.annualSalary, employee.annualBonus, employee.healthInsuranceAnnual]);
+  }, [employee.annualSalary, employee.annualBonus, employee.healthInsuranceAnnual, employee.healthInsurancePlan]);
 
   const updateField = (field, value) => {
     setEmployee(prev => ({ ...prev, [field]: value }));
@@ -218,17 +222,32 @@ const AddEmployeeScreen = ({ navigation, route }) => {
               Benefits
             </AppText>
 
-            <Input
-              label="Annual Health Insurance Cost *"
-              value={employee.healthInsuranceAnnual}
-              onChangeText={(value) => updateField('healthInsuranceAnnual', value)}
-              error={errors.healthInsuranceAnnual}
-              placeholder="5155.44"
-              keyboardType="numeric"
-            />
+            <AppText variant="bodySmall" color={Colors.textSecondary} style={styles.inputLabel}>
+              Health Insurance Plan *
+            </AppText>
+            <TouchableOpacity
+              style={styles.planPickerButton}
+              onPress={() => setShowHealthInsuranceModal(true)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.planPickerContent}>
+                <View>
+                  <AppText variant="body" style={styles.planPickerText}>
+                    {employee.healthInsurancePlan}
+                  </AppText>
+                  <AppText variant="caption" color={Colors.textSecondary}>
+                    {EmployeeCostCalculator.formatCurrency(employee.healthInsuranceMonthly)}/month
+                    ({EmployeeCostCalculator.formatCurrency(employee.healthInsuranceAnnual)}/year)
+                  </AppText>
+                </View>
+                <AppText variant="body" color={Colors.primary} style={styles.planPickerArrow}>
+                  ›
+                </AppText>
+              </View>
+            </TouchableOpacity>
 
             <AppText variant="caption" color={Colors.textSecondary} style={styles.hint}>
-              Default: $5,155.44/year ($429.62/month). Adjust if employee has dependents.
+              Select the employee's health insurance plan. Costs are included in meeting calculations.
             </AppText>
           </View>
 
@@ -277,6 +296,22 @@ const AddEmployeeScreen = ({ navigation, route }) => {
             loading={loading}
           />
         </View>
+
+        {/* Health Insurance Plan Picker Modal */}
+        <HealthInsurancePickerModal
+          visible={showHealthInsuranceModal}
+          selectedPlan={employee.healthInsurancePlan}
+          onConfirm={(planName, planData) => {
+            setEmployee(prev => ({
+              ...prev,
+              healthInsurancePlan: planName,
+              healthInsuranceMonthly: planData.monthly,
+              healthInsuranceAnnual: planData.annual,
+            }));
+            setShowHealthInsuranceModal(false);
+          }}
+          onCancel={() => setShowHealthInsuranceModal(false)}
+        />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -301,7 +336,7 @@ const styles = StyleSheet.create({
     marginLeft: -Spacing.xs,
   },
   backButtonText: {
-    fontSize: 17,
+    fontSize: 14,  // reduced from 17
   },
   content: {
     flex: 1,
@@ -350,6 +385,30 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     borderTopWidth: 1,
     borderTopColor: Colors.border,
+  },
+  inputLabel: {
+    marginBottom: Spacing.xs,
+  },
+  planPickerButton: {
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    marginBottom: Spacing.sm,
+    backgroundColor: Colors.background,
+  },
+  planPickerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  planPickerText: {
+    fontWeight: '600',
+    marginBottom: Spacing.xs,
+  },
+  planPickerArrow: {
+    fontSize: 20,
   },
 });
 

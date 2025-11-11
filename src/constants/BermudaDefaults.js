@@ -14,9 +14,22 @@ export const BermudaDefaults = {
   // Pension (Occupational Pensions Act)
   employerPensionRate: 5,          // 5% employer match (typical rate)
 
-  // Benefits
-  defaultHealthInsuranceMonthly: 429.62,  // $429.62/month per employee default (editable for dependents)
-  defaultHealthInsuranceAnnual: 5155.44,  // $429.62 × 12 months
+  // Benefits - Health Insurance Plans (8 options, employee selects one)
+  defaultHealthInsurancePlan: 'Employee only',  // Default plan
+  defaultHealthInsuranceMonthly: 429.61,  // $429.61/month for "Employee only" (default)
+  defaultHealthInsuranceAnnual: 5155.32,  // $429.61 × 12 months
+
+  // All 8 health insurance plan options
+  healthInsurancePlans: [
+    { name: 'Employee only', monthly: 429.61, annual: 5155.32 },
+    { name: 'Employee and non-working spouse', monthly: 864.28, annual: 10371.36 },
+    { name: 'Employee, non-working spouse & child(ren)', monthly: 1087.28, annual: 13047.36 },
+    { name: 'Employee & child(ren)', monthly: 652.60, annual: 7831.20 },
+    { name: 'Employee & working spouse', monthly: 664.13, annual: 7969.56 },
+    { name: 'Employee, working spouse & child(ren)', monthly: 887.12, annual: 10645.44 },
+    { name: 'HIP, Employee only', monthly: 200.16, annual: 2401.92 },
+    { name: 'HIP, Employee & non-working spouse', monthly: 400.31, annual: 4803.72 },
+  ],
 
   // Currency
   defaultCurrency: 'BMD',     // Bermuda Dollar

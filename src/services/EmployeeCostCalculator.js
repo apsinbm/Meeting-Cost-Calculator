@@ -11,10 +11,16 @@ import { BermudaDefaults } from '../constants';
  * - Payroll Tax: 10% of total compensation, capped at $1M per employee
  * - Employer Pension: 5% of annual salary (Occupational Pensions Act)
  * - Social Insurance: Fixed $37.65/week ($1,957.80/year) - NOT percentage-based
- * - Health Insurance: $500/month default ($6,000/year), editable per employee
+ * - Health Insurance: Employee selects from 8 plans ($200-$1,087/month), monthly cost × 12
  *
- * Hourly Cost = Total Annual Cost / 2080 hours (40 hours/week * 52 weeks)
- * Per-Minute Cost = Hourly Cost / 60
+ * Time-Based Calculations:
+ * Hourly Cost = Total Annual Cost ÷ 2,080 hours (40 hours/week × 52 weeks)
+ * Per-Minute Cost = Hourly Cost ÷ 60 minutes
+ * Per-Second Cost = Per-Minute Cost ÷ 60 seconds (implicit in meeting calculations)
+ *
+ * All components including health insurance are included in per-minute cost.
+ * Meeting system updates every second using: perMinuteCost × (elapsedSeconds ÷ 60)
+ * This ensures per-second precision for all cost components.
  */
 
 class EmployeeCostCalculator {

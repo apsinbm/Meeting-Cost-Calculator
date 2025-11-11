@@ -5,6 +5,7 @@ import { TextStyles, Colors } from '../constants';
 /**
  * AppText Component
  * Wrapper around Text with typography system support
+ * Disables font scaling for critical UI elements to maintain layout consistency
  */
 const AppText = ({
   children,
@@ -16,6 +17,10 @@ const AppText = ({
   const textStyle = TextStyles[variant] || TextStyles.body;
   const textColor = color || Colors.textPrimary;
 
+  // Disable font scaling for critical UI elements to prevent user accessibility settings
+  // from breaking layout (e.g., cost display, timers, headings)
+  const disableFontScaling = ['h1', 'h2', 'h3', 'costDisplay', 'button'].includes(variant);
+
   return (
     <RNText
       style={[
@@ -23,6 +28,7 @@ const AppText = ({
         { color: textColor },
         style,
       ]}
+      allowFontScaling={!disableFontScaling}
       {...props}
     >
       {children}

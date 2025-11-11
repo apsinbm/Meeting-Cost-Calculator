@@ -49,7 +49,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'Calculate',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 16, color, fontWeight: 'bold' }}>123</Text>
+            <Text style={{ fontSize: 12, color, fontWeight: 'bold', lineHeight: 18 }}>123</Text>
           ),
         }}
       />
@@ -59,7 +59,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'Start',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 24, color, fontWeight: 'bold' }}>▶</Text>
+            <Text style={{ fontSize: 18, color, fontWeight: 'bold', lineHeight: 18 }}>▶</Text>
           ),
         }}
       />
@@ -69,7 +69,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 22, color, fontWeight: 'bold' }}>◔</Text>
+            <Text style={{ fontSize: 18, color, fontWeight: 'bold', lineHeight: 18 }}>◔</Text>
           ),
         }}
       />
@@ -79,7 +79,7 @@ const TabNavigator = () => {
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 20, color, fontWeight: 'bold' }}>⚙</Text>
+            <Text style={{ fontSize: 18, color, fontWeight: 'bold', lineHeight: 18 }}>⚙</Text>
           ),
         }}
       />

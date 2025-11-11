@@ -117,15 +117,15 @@ const styles = StyleSheet.create({
   },
   headline: {
     textAlign: 'center',
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: scaledFontSize(24),
+    lineHeight: scaledFontSize(29),
     fontWeight: '700',
   },
   subheadline: {
     textAlign: 'center',
     marginBottom: Spacing.lg,
-    fontSize: 15,
-    lineHeight: 21,
+    fontSize: scaledFontSize(13),
+    lineHeight: scaledFontSize(18),
     paddingHorizontal: Spacing.sm,
   },
   benefitsContainer: {
@@ -149,16 +149,16 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     flex: 1,
-    fontSize: 15,
-    lineHeight: 21,
+    fontSize: scaledFontSize(13),
+    lineHeight: scaledFontSize(18),
   },
   quote: {
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: Spacing.lg,
     paddingHorizontal: Spacing.md,
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: scaledFontSize(14),
+    lineHeight: scaledFontSize(19),
   },
   footer: {
     paddingHorizontal: Spacing.lg,

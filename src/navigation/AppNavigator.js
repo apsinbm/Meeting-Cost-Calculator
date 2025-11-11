@@ -11,6 +11,7 @@ import AboutCalculationsScreen from '../screens/Settings/AboutCalculationsScreen
 import MeetingPredictorScreen from '../screens/MeetingPredictor/MeetingPredictorScreen';
 import PrivacyPolicyScreen from '../screens/Legal/PrivacyPolicyScreen';
 import TermsOfServiceScreen from '../screens/Legal/TermsOfServiceScreen';
+import EmployeeService from '../services/EmployeeService';
 
 const Stack = createStackNavigator();
 
@@ -28,6 +29,9 @@ const AppNavigator = () => {
 
   const checkOnboardingStatus = async () => {
     try {
+      // Migrate existing employees to use health insurance plans if needed
+      await EmployeeService.migrateHealthInsurancePlans();
+
       // Always show welcome screen on app open
       setInitialRoute('Welcome');
     } catch (error) {

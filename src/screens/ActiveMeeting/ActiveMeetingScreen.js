@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Card } from '../../components';
 import CostMilestoneFlash from '../../components/CostMilestoneFlash';
 import { Colors, Spacing, FontSizes } from '../../constants';
+import { scaledFontSize } from '../../utils/iPadOptimization';
 import MeetingCostCalculator from '../../services/MeetingCostCalculator';
 import MeetingService from '../../services/MeetingService';
 import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
@@ -144,8 +145,12 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
     // Trigger flash animation
     setShowFlash(true);
 
-    // Play haptic feedback pattern and audio alert
-    AudioService.playMilestoneAlert();
+    // Play haptic feedback pattern and audio alert (await to ensure it completes)
+    try {
+      await AudioService.playMilestoneAlert();
+    } catch (error) {
+      console.error('Error playing milestone alert:', error);
+    }
   };
 
   const handleFlashComplete = () => {
@@ -399,9 +404,9 @@ const styles = StyleSheet.create({
   },
   costDisplay: {
     color: Colors.primary,
-    fontSize: 64,
+    fontSize: scaledFontSize(54),
     fontWeight: '700',
-    lineHeight: 76,
+    lineHeight: scaledFontSize(65),
     marginBottom: Spacing.xs,
     flexShrink: 1,
     textAlign: 'center',
@@ -419,9 +424,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   timeDisplay: {
-    fontSize: 48,
+    fontSize: scaledFontSize(40),
     fontWeight: '700',
-    lineHeight: 58,
+    lineHeight: scaledFontSize(50),
     marginBottom: Spacing.xs,
     textAlign: 'center',
   },
@@ -538,9 +543,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   endDialogCost: {
-    fontSize: 48,
+    fontSize: scaledFontSize(40),
     fontWeight: '700',
-    lineHeight: 58,
+    lineHeight: scaledFontSize(50),
     marginTop: Spacing.sm,
   },
   endDialogRow: {

@@ -18,7 +18,11 @@
   "submit": {
     "production": {
       "ios": {
-        "ascAppId": "6739088779"
+        "ascAppId": "6739088779",
+        "appleId": "singleton33@yahoo.com",
+        "ascApiKeyPath": "./AuthKey_HG8TC9Z7DP.p8",
+        "ascApiKeyIssuerId": "dd9ff28c-3628-44cd-b32c-2c40bf89f534",
+        "ascApiKeyId": "HG8TC9Z7DP"
       }
     }
   }

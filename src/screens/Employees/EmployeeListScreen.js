@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { AppText, Card, Input, Button } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { scaledFontSize, scaledSpacing, scaledImageDimensions, getIsIPad } from '../../utils/iPadOptimization';
 import EmployeeService from '../../services/EmployeeService';
 import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
 
@@ -250,7 +251,7 @@ const styles = StyleSheet.create({
     marginLeft: -Spacing.xs,
   },
   backButtonText: {
-    fontSize: 17,
+    fontSize: 14,  // reduced from 17
   },
   searchContainer: {
     paddingHorizontal: Spacing.md,
@@ -317,7 +318,7 @@ const styles = StyleSheet.create({
     height: 180,
   },
   emptyIconText: {
-    fontSize: 48,
+    fontSize: scaledFontSize(40),
   },
   emptyTitle: {
     marginBottom: Spacing.sm,
@@ -331,8 +332,8 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     marginTop: Spacing.lg,
     paddingHorizontal: Spacing.md,
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: scaledFontSize(14),
+    lineHeight: scaledFontSize(19),
   },
   deleteButton: {
     backgroundColor: Colors.error,

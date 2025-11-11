@@ -7,3 +7,4 @@ export { default as AppText } from './AppText';
 export { default as AttendeePickerModal } from './AttendeePickerModal';
 export { default as EditTextModal } from './EditTextModal';
 export { default as CurrencyPickerModal } from './CurrencyPickerModal';
+export { default as HealthInsurancePickerModal } from './HealthInsurancePickerModal';

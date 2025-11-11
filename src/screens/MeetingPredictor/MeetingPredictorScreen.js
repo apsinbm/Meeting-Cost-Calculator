@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-nat
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Card, Button, AttendeePickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
+import { scaledFontSize } from '../../utils/iPadOptimization';
 import EmployeeService from '../../services/EmployeeService';
 import MeetingCostCalculator from '../../services/MeetingCostCalculator';
 import EmployeeCostCalculator from '../../services/EmployeeCostCalculator';
@@ -274,12 +275,12 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: scaledFontSize(17),
     fontWeight: '700',
     marginBottom: 2,
   },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: scaledFontSize(11),
     marginTop: 0,
   },
   content: {
@@ -329,9 +330,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   totalCost: {
-    fontSize: 48,
+    fontSize: scaledFontSize(40),
     fontWeight: '700',
-    lineHeight: 58,
+    lineHeight: scaledFontSize(50),
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },

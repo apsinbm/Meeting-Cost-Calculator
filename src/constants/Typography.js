@@ -4,14 +4,14 @@
 import { Platform } from 'react-native';
 
 export const FontSizes = {
-  xs: 12,
-  sm: 14,
-  md: 16,
-  lg: 18,
-  xl: 20,
-  xxl: 24,
-  xxxl: 32,
-  huge: 56,  // For active meeting cost display
+  xs: 10,      // was 12
+  sm: 12,      // was 14
+  md: 14,      // was 16
+  lg: 15,      // was 18
+  xl: 17,      // was 20
+  xxl: 20,     // was 24
+  xxxl: 27,    // was 32
+  huge: 48,    // was 56 (for active meeting cost display)
 };
 
 export const FontWeights = {

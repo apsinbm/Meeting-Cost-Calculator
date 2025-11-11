@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     marginLeft: -Spacing.xs,
   },
   backButtonText: {
-    fontSize: 17,
+    fontSize: 14,  // reduced from 17
   },
   content: {
     flex: 1,

@@ -1,6 +1,7 @@
 import StorageService from './StorageService';
 import EmployeeCostCalculator from './EmployeeCostCalculator';
 import ValidationService from './ValidationService';
+import { BermudaDefaults } from '../constants';
 
 /**
  * EmployeeService
@@ -65,6 +66,10 @@ class EmployeeService {
       console.log('parseFloat(annualBonus):', parsedBonus);
       console.log('Parsed bonus type:', typeof parsedBonus);
 
+      // Determine health insurance plan (use provided or default)
+      const healthPlanName = employeeData.healthInsurancePlan || BermudaDefaults.defaultHealthInsurancePlan;
+      const healthPlanMonthly = employeeData.healthInsuranceMonthly || BermudaDefaults.defaultHealthInsuranceMonthly;
+
       // Create employee object
       const employee = {
         id: this._generateId(),
@@ -73,7 +78,9 @@ class EmployeeService {
         email: employeeData.email ? employeeData.email.trim().toLowerCase() : '',
         annualSalary: parseFloat(employeeData.annualSalary),
         annualBonus: parsedBonus,
-        healthInsuranceAnnual: parseFloat(employeeData.healthInsuranceAnnual) || 5155.44,
+        healthInsurancePlan: healthPlanName,
+        healthInsuranceMonthly: parseFloat(healthPlanMonthly),
+        healthInsuranceAnnual: parseFloat(healthPlanMonthly) * 12,  // Calculated from monthly
         hourlyCost: costs.hourlyCost,
         perMinuteCost: costs.perMinuteCost,
         totalAnnualCost: costs.totalAnnualCost,
@@ -158,6 +165,10 @@ class EmployeeService {
       // Calculate costs
       const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData, settings);
 
+      // Determine health insurance plan (use provided or keep existing)
+      const healthPlanName = employeeData.healthInsurancePlan || employees[index].healthInsurancePlan || BermudaDefaults.defaultHealthInsurancePlan;
+      const healthPlanMonthly = employeeData.healthInsuranceMonthly || employees[index].healthInsuranceMonthly || BermudaDefaults.defaultHealthInsuranceMonthly;
+
       // Update employee
       employees[index] = {
         ...employees[index],
@@ -166,7 +177,9 @@ class EmployeeService {
         email: employeeData.email ? employeeData.email.trim().toLowerCase() : '',
         annualSalary: parseFloat(employeeData.annualSalary),
         annualBonus: parseFloat(employeeData.annualBonus) || 0,
-        healthInsuranceAnnual: parseFloat(employeeData.healthInsuranceAnnual) || 5155.44,
+        healthInsurancePlan: healthPlanName,
+        healthInsuranceMonthly: parseFloat(healthPlanMonthly),
+        healthInsuranceAnnual: parseFloat(healthPlanMonthly) * 12,  // Calculated from monthly
         hourlyCost: costs.hourlyCost,
         perMinuteCost: costs.perMinuteCost,
         totalAnnualCost: costs.totalAnnualCost,
@@ -289,6 +302,50 @@ class EmployeeService {
       return {
         success: false,
         error: 'Failed to delete all employees',
+      };
+    }
+  }
+
+  /**
+   * Migrate existing employees to use health insurance plans
+   * Sets all employees without a plan to "Employee only" plan ($429.61/month)
+   */
+  async migrateHealthInsurancePlans() {
+    try {
+      const employees = await this.getEmployees();
+      let needsSave = false;
+
+      const migratedEmployees = employees.map(emp => {
+        // If employee already has new fields, no migration needed
+        if (emp.healthInsurancePlan && emp.healthInsuranceMonthly) {
+          return emp;
+        }
+
+        // Otherwise, migrate to "Employee only" plan
+        needsSave = true;
+        return {
+          ...emp,
+          healthInsurancePlan: BermudaDefaults.defaultHealthInsurancePlan,
+          healthInsuranceMonthly: BermudaDefaults.defaultHealthInsuranceMonthly,
+          healthInsuranceAnnual: BermudaDefaults.defaultHealthInsuranceAnnual,
+        };
+      });
+
+      if (needsSave) {
+        await StorageService.saveEmployees(migratedEmployees);
+        // Recalculate costs after migration
+        await this.recalculateAllCosts();
+      }
+
+      return {
+        success: true,
+        migratedCount: employees.length - migratedEmployees.filter(e => e.healthInsurancePlan).length,
+      };
+    } catch (error) {
+      console.error('Error migrating health insurance plans:', error);
+      return {
+        success: false,
+        error: 'Failed to migrate health insurance plans',
       };
     }
   }

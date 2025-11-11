@@ -4,7 +4,7 @@ import { Colors } from '../constants';
 
 /**
  * Full-screen flash animation for $100 cost milestones
- * Animates: white -> red -> white -> red -> white -> red -> white (7 flashes)
+ * Animates: white -> red -> white -> red -> white (5 flashes, slightly shorter)
  */
 const CostMilestoneFlash = ({ visible, onComplete }) => {
   const opacity = useRef(new Animated.Value(0)).current;
@@ -22,7 +22,7 @@ const CostMilestoneFlash = ({ visible, onComplete }) => {
     const gapDuration = 50;
 
     const performFlash = (flashNumber) => {
-      if (flashNumber >= 7) {
+      if (flashNumber >= 5) {
         if (onComplete) {
           onComplete();
         }
