@@ -2,22 +2,11 @@
   "expo": {
     "name": "Meeting Cost Calculator",
     "slug": "meeting-cost-calculator",
-    "version": "1.0.21",
+    "version": "1.0.27",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "description": "Track the real cost of your meetings. Calculate accurate meeting expenses by combining employee salaries, bonuses, and comprehensive employment costs including Bermuda payroll taxes, social insurance, and health insurance. See in real-time how much each meeting costs and generate detailed cost reports.",
-    "keywords": [
-      "meeting",
-      "cost",
-      "calculator",
-      "productivity",
-      "expense",
-      "budget",
-      "employee",
-      "salary",
-      "business"
-    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -48,7 +37,6 @@
           },
           {
             "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherDataTypes",
-            "NSPrivacyCollectedDataTypeDescription": "Employee salary and compensation information for meeting cost calculations",
             "NSPrivacyCollectedDataTypeLinked": false,
             "NSPrivacyCollectedDataTypeTracking": false,
             "NSPrivacyCollectedDataTypePurposes": [
@@ -76,14 +64,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-audio"
+      "expo-audio",
+      "expo-asset"
     ],
     "extra": {
       "eas": {
         "projectId": "03f2d98d-ed24-40a2-ab7c-b7a762f85716"
       }
     },
-    "privacy": "https://atlanticground.com/privacy",
     "runtimeVersion": "1.0.0"
   }
 }
