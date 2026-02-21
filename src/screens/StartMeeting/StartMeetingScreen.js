@@ -79,9 +79,9 @@ const StartMeetingScreen = ({ navigation }) => {
         onAddEmployee={() => {
           setModalVisible(false);
           navigation.navigate('AddEmployee', {
-            onEmployeeAdded: () => {
-              loadEmployees();
-              setTimeout(() => setModalVisible(true), 100);
+            onEmployeeAdded: async () => {
+              await loadEmployees();
+              setTimeout(() => setModalVisible(true), 300);
             },
           });
         }}

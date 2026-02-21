@@ -38,8 +38,8 @@ const AddEmployeeScreen = ({ navigation, route }) => {
       try {
         const employeeData = {
           ...employee,
-          annualSalary: parseFloat(employee.annualSalary) || 0,
-          annualBonus: parseFloat(employee.annualBonus) || 0,
+          annualSalary: parseFloat(String(employee.annualSalary).replace(/,/g, '')) || 0,
+          annualBonus: parseFloat(String(employee.annualBonus).replace(/,/g, '')) || 0,
           healthInsuranceAnnual: parseFloat(employee.healthInsuranceAnnual) || BermudaDefaults.defaultHealthInsuranceAnnual,
         };
         const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData);
@@ -92,18 +92,16 @@ const AddEmployeeScreen = ({ navigation, route }) => {
     setLoading(true);
 
     try {
-      // DEBUG: Log the employee data before sending to service
-      console.log('=== AddEmployeeScreen.handleSave ===');
-      console.log('Raw employee data:', JSON.stringify(employee, null, 2));
-      console.log('annualBonus type:', typeof employee.annualBonus);
-      console.log('annualBonus value:', employee.annualBonus);
-      console.log('annualBonus length:', employee.annualBonus?.length);
-
       const result = isEditing
         ? await EmployeeService.updateEmployee(existingEmployee.id, employee)
         : await EmployeeService.addEmployee(employee);
 
       if (result.success) {
+        // Call the onEmployeeAdded callback if provided (e.g., from attendee picker flow)
+        if (route.params?.onEmployeeAdded) {
+          route.params.onEmployeeAdded();
+        }
+
         Alert.alert(
           'Success',
           isEditing ? 'Employee updated successfully' : 'Employee added successfully',

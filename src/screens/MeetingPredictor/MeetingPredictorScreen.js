@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { AppText, Card, Button, AttendeePickerModal } from '../../components';
 import { Colors, Spacing } from '../../constants';
 import { scaledFontSize } from '../../utils/iPadOptimization';
@@ -21,9 +22,11 @@ const MeetingPredictorScreen = ({ navigation }) => {
 
   const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 
-  useEffect(() => {
-    loadEmployees();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadEmployees();
+    }, [])
+  );
 
   useEffect(() => {
     if (selectedAttendees.length > 0) {
@@ -80,12 +83,13 @@ const MeetingPredictorScreen = ({ navigation }) => {
         onAddEmployee={() => {
           setModalVisible(false);
           navigation.navigate('AddEmployee', {
-            onEmployeeAdded: () => {
-              loadEmployees();
-              setTimeout(() => setModalVisible(true), 100);
+            onEmployeeAdded: async () => {
+              await loadEmployees();
+              setTimeout(() => setModalVisible(true), 300);
             },
           });
         }}
+        mode="select"
       />
 
       {/* Header */}
@@ -132,11 +136,22 @@ const MeetingPredictorScreen = ({ navigation }) => {
               ))}
             </View>
           )}
-          <Button
-            title={selectedAttendees.length === 0 ? 'Select Attendees' : 'Change Attendees'}
-            variant="secondary"
-            onPress={handleSelectAttendees}
-          />
+          <View style={styles.attendeeButtons}>
+            <Button
+              title={selectedAttendees.length === 0 ? 'Select Attendees' : 'Change'}
+              variant="secondary"
+              onPress={handleSelectAttendees}
+              style={selectedAttendees.length > 0 ? { flex: 1, marginRight: Spacing.sm } : {}}
+            />
+            {selectedAttendees.length > 0 && (
+              <Button
+                title="Clear"
+                variant="secondary"
+                onPress={() => setSelectedAttendees([])}
+                style={{ flex: 1 }}
+              />
+            )}
+          </View>
         </Card>
 
         {/* Duration Selection */}
@@ -233,18 +248,19 @@ const MeetingPredictorScreen = ({ navigation }) => {
                   </AppText>
                 </AppText>
               </View>
-              {prediction.attendeeCosts && prediction.attendeeCosts.length > 0 && (
-                <View style={styles.insightItem}>
-                  <AppText variant="body" color={Colors.textSecondary}>
-                    • Removing the highest-cost attendee would save{' '}
-                    <AppText variant="body" style={{ fontWeight: '600' }}>
-                      {EmployeeCostCalculator.formatCurrency(
-                        Math.max(...prediction.attendeeCosts.map(a => a.cost))
-                      )}
+              {prediction.attendeeCosts && prediction.attendeeCosts.length > 0 && (() => {
+                const maxCost = prediction.attendeeCosts.reduce((max, a) => Math.max(max, a.cost), 0);
+                return (
+                  <View style={styles.insightItem}>
+                    <AppText variant="body" color={Colors.textSecondary}>
+                      • Removing the highest-cost attendee would save{' '}
+                      <AppText variant="body" style={{ fontWeight: '600' }}>
+                        {EmployeeCostCalculator.formatCurrency(maxCost)}
+                      </AppText>
                     </AppText>
-                  </AppText>
-                </View>
-              )}
+                  </View>
+                );
+              })()}
               <View style={styles.insightItem}>
                 <AppText variant="body" color={Colors.textSecondary}>
                   • Reducing duration to {Math.floor(duration / 2)} minutes would save{' '}
@@ -304,6 +320,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.sm,
+  },
+  attendeeButtons: {
+    flexDirection: 'row',
   },
   durationGrid: {
     flexDirection: 'row',

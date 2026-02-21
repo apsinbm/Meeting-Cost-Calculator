@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Image, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, AppText } from '../../components';
 import { Colors, Spacing } from '../../constants';
@@ -11,6 +11,19 @@ import { scaledFontSize, scaledSpacing, scaledImageDimensions, getMaxContentWidt
  */
 const WelcomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const contentOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Show illustration first, then fade in text content after a delay
+    const timer = setTimeout(() => {
+      Animated.timing(contentOpacity, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }).start();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleContinue = async () => {
     try {
@@ -39,32 +52,36 @@ const WelcomeScreen = ({ navigation }) => {
         </View>
 
         {/* Headline - wrapped for better text handling on iPad */}
-        <View style={styles.headlineContainer}>
+        <Animated.View style={[styles.headlineContainer, { opacity: contentOpacity }]}>
           <AppText variant="h1" style={styles.headline}>
             Track What Meetings Cost
           </AppText>
-        </View>
+        </Animated.View>
 
         {/* Subheadline */}
-        <AppText variant="body" color={Colors.textSecondary} style={styles.subheadline}>
-          Calculate real-time employee costs to the company
-        </AppText>
+        <Animated.View style={{ opacity: contentOpacity }}>
+          <AppText variant="body" color={Colors.textSecondary} style={styles.subheadline}>
+            Calculate real-time employee costs to the company
+          </AppText>
+        </Animated.View>
 
         {/* Benefits */}
-        <View style={styles.benefitsContainer}>
+        <Animated.View style={[styles.benefitsContainer, { opacity: contentOpacity }]}>
           <BenefitItem text="Start tracking meetings immediately" />
           <BenefitItem text="Complete privacy - data never leaves device" />
           <BenefitItem text="Accurate costs with true employment expenses" />
-        </View>
+        </Animated.View>
 
         {/* Motivational Quote */}
-        <AppText variant="body" color={Colors.textSecondary} style={styles.quote}>
-          "The most efficient meeting is often the one that never takes place."
-        </AppText>
+        <Animated.View style={{ opacity: contentOpacity }}>
+          <AppText variant="body" color={Colors.textSecondary} style={styles.quote}>
+            "The most efficient meeting is often the one that never takes place."
+          </AppText>
+        </Animated.View>
       </View>
 
       {/* Continue Button */}
-      <View style={styles.footer}>
+      <Animated.View style={[styles.footer, { opacity: contentOpacity }]}>
         <Button
           title="Start Tracking"
           onPress={handleContinue}
@@ -73,7 +90,7 @@ const WelcomeScreen = ({ navigation }) => {
         <AppText variant="caption" color={Colors.textSecondary} style={styles.footerHint}>
           Add employees, then start your first meeting
         </AppText>
-      </View>
+      </Animated.View>
     </SafeAreaView>
   );
 };

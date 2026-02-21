@@ -14,6 +14,17 @@ class MeetingCostCalculator {
    * @returns {object} Cost breakdown with milestones
    */
   calculatePreMeetingCost(attendees, durationMinutes) {
+    if (!attendees || !Array.isArray(attendees) || attendees.length === 0) {
+      return {
+        attendeeCount: 0,
+        totalPerMinuteCost: 0,
+        durationMinutes,
+        totalCost: 0,
+        milestones: [],
+        attendeeCosts: [],
+      };
+    }
+
     // Sum of all attendee per-minute costs
     const totalPerMinuteCost = attendees.reduce((sum, attendee) => {
       return sum + (attendee.perMinuteCost || 0);
@@ -48,6 +59,19 @@ class MeetingCostCalculator {
    * @returns {object} Current cost and next milestone info
    */
   calculateRealTimeCost(attendees, elapsedMinutes) {
+    if (!attendees || !Array.isArray(attendees) || attendees.length === 0) {
+      return {
+        currentCost: 0,
+        totalPerMinuteCost: 0,
+        elapsedMinutes,
+        milestonesReached: [],
+        nextMilestone: null,
+        nextMilestoneCost: null,
+        minutesToNextMilestone: null,
+        attendeeCosts: [],
+      };
+    }
+
     // Sum of all attendee per-minute costs
     const totalPerMinuteCost = attendees.reduce((sum, attendee) => {
       return sum + (attendee.perMinuteCost || 0);
@@ -91,6 +115,22 @@ class MeetingCostCalculator {
    * @returns {object} Final cost breakdown with comparison
    */
   calculateFinalCost(attendees, actualMinutes, scheduledMinutes) {
+    if (!attendees || !Array.isArray(attendees) || attendees.length === 0) {
+      return {
+        actualCost: 0,
+        scheduledCost: 0,
+        costDifference: 0,
+        ranOver: false,
+        endedEarly: false,
+        actualMinutes,
+        scheduledMinutes,
+        minutesDifference: actualMinutes - scheduledMinutes,
+        attendeeCosts: [],
+        milestones: [],
+        costPerMinute: 0,
+      };
+    }
+
     const totalPerMinuteCost = attendees.reduce((sum, attendee) => {
       return sum + (attendee.perMinuteCost || 0);
     }, 0);
@@ -106,7 +146,7 @@ class MeetingCostCalculator {
     const attendeeCosts = attendees.map(attendee => ({
       ...attendee,
       finalCost: this._round2((attendee.perMinuteCost || 0) * actualMinutes),
-      percentageOfTotal: this._round2(((attendee.perMinuteCost || 0) / totalPerMinuteCost) * 100),
+      percentageOfTotal: totalPerMinuteCost > 0 ? this._round2(((attendee.perMinuteCost || 0) / totalPerMinuteCost) * 100) : 0,
     }));
 
     return {

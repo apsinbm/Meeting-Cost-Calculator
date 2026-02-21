@@ -103,8 +103,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
         <AppText variant="body" style={styles.paragraph}>
           The App uses simplified calculations for:{'\n'}
           • Payroll Tax: 10% (actual rates vary by company size and industry: 1-10%){'\n'}
-          • Social Insurance: 5% (actual rate is $37.65/week fixed amount){'\n'}
-          • Health Insurance: User-configurable (default $12,000 annually){'\n'}
+          • Social Insurance: $37.65/week fixed ($1,957.80/year){'\n'}
+          • Health Insurance: Default $429.61/month (Employee only), adjustable per employee by plan and family size{'\n'}
           • Pension Contributions: 5% employer match
         </AppText>
         <AppText variant="body" style={styles.paragraph}>

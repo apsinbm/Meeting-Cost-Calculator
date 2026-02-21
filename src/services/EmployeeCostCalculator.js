@@ -66,8 +66,9 @@ class EmployeeCostCalculator {
     // Step 6: Total Annual Cost to Company
     const totalAnnualCost = totalCompensation + healthInsuranceCost + payrollTax + employerPension + socialInsurance;
 
-    // Step 7: Hourly Cost (based on 40-hour work week, 52 weeks)
-    const hourlyCost = totalAnnualCost / BermudaDefaults.workHoursPerYear;
+    // Step 7: Hourly Cost (based on work week hours setting, 52 weeks)
+    const workHoursPerYear = (settings?.workWeekHours || 40) * 52;
+    const hourlyCost = totalAnnualCost / workHoursPerYear;
 
     // Step 8: Per-Minute Cost
     const perMinuteCost = hourlyCost / 60;

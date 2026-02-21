@@ -77,6 +77,8 @@ const SettingsScreen = ({ navigation }) => {
     const result = await CompanyService.updateWorkWeekHours(hours);
     if (result.success) {
       setCompanySettings(result.settings);
+      // Recalculate all employee costs with new work-week hours
+      await EmployeeService.recalculateAllCosts();
     }
     setEditWorkHoursModalVisible(false);
   };
@@ -204,8 +206,9 @@ const SettingsScreen = ({ navigation }) => {
           />
           <SettingsItem
             title="Currency"
-            value={currencyInfo.name}
-            onPress={() => setCurrencyModalVisible(true)}
+            value="BMD ($) — All amounts displayed in $"
+            onPress={() => {}}
+            disabled
           />
           <SettingsItem
             title="Work Week Hours"
@@ -336,7 +339,7 @@ const SettingsScreen = ({ navigation }) => {
             }}
           />
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.sm, textAlign: 'center', fontSize: 9 }}>
-            Version 1.0.20
+            Version 1.0.30
           </AppText>
           <AppText variant="caption" color={Colors.textSecondary} style={{ marginTop: Spacing.xs, textAlign: 'center', fontSize: 9 }}>
             Your data never leaves your device

@@ -85,10 +85,10 @@ class StorageService {
   async getSettings() {
     try {
       const data = await AsyncStorage.getItem(KEYS.SETTINGS);
-      return data ? JSON.parse(data) : null;
+      return data ? JSON.parse(data) : {};
     } catch (error) {
       console.error('Error getting settings:', error);
-      return null;
+      return {};
     }
   }
 

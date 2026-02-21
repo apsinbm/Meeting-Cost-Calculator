@@ -25,6 +25,7 @@ const AttendeePickerModal = ({
   onConfirm,
   onCancel,
   onAddEmployee,
+  mode = 'start', // 'start' for starting meetings, 'select' for just selecting attendees
 }) => {
   const [selected, setSelected] = useState([]);
   const flashAnim = useRef(new Animated.Value(0)).current;
@@ -47,7 +48,15 @@ const AttendeePickerModal = ({
   };
 
   const handleConfirm = () => {
-    // Trigger red flash animation
+    const selectedEmps = employees.filter(emp => selected.includes(emp.id));
+
+    // In select mode, just confirm immediately without animation
+    if (mode === 'select') {
+      onConfirm(selectedEmps);
+      return;
+    }
+
+    // In start mode, trigger red flash animation
     Animated.sequence([
       Animated.timing(flashAnim, {
         toValue: 1,
@@ -61,7 +70,6 @@ const AttendeePickerModal = ({
       }),
     ]).start(() => {
       // Call onConfirm after animation completes
-      const selectedEmps = employees.filter(emp => selected.includes(emp.id));
       onConfirm(selectedEmps);
     });
   };
@@ -98,7 +106,7 @@ const AttendeePickerModal = ({
       onRequestClose={onCancel}
     >
       <Pressable style={styles.modalOverlay} onPress={onCancel}>
-        <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
+        <View style={styles.modalContent}>
           <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
             {/* Header */}
             <View style={styles.header}>
@@ -152,26 +160,35 @@ const AttendeePickerModal = ({
                 onPress={onCancel}
                 style={{ flex: 1, marginRight: Spacing.sm }}
               />
-              <Animated.View style={[
-                { flex: 1 },
-                {
-                  backgroundColor: flashAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [Colors.primary, Colors.error]
-                  }),
-                  borderRadius: 8,
-                }
-              ]}>
+              {mode === 'select' ? (
                 <Button
-                  title="Start"
+                  title="Confirm"
                   onPress={handleConfirm}
-                  style={{ flex: 1, backgroundColor: 'transparent' }}
+                  style={{ flex: 1 }}
                   disabled={selected.length === 0}
                 />
-              </Animated.View>
+              ) : (
+                <Animated.View style={[
+                  { flex: 1 },
+                  {
+                    backgroundColor: flashAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [Colors.primary, Colors.error]
+                    }),
+                    borderRadius: 8,
+                  }
+                ]}>
+                  <Button
+                    title="Start"
+                    onPress={handleConfirm}
+                    style={{ flex: 1, backgroundColor: 'transparent' }}
+                    disabled={selected.length === 0}
+                  />
+                </Animated.View>
+              )}
             </View>
           </SafeAreaView>
-        </Pressable>
+        </View>
       </Pressable>
     </Modal>
   );

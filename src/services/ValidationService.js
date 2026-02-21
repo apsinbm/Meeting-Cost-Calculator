@@ -20,11 +20,12 @@ class ValidationService {
   }
 
   /**
-   * Validate employee role
+   * Validate employee role (optional)
    */
   validateRole(role) {
+    // Role is now optional - skip validation if empty
     if (!role || role.trim().length === 0) {
-      return { valid: false, error: 'Role is required' };
+      return { valid: true };
     }
     return { valid: true };
   }
@@ -50,7 +51,8 @@ class ValidationService {
    * Validate annual salary
    */
   validateSalary(salary) {
-    const numSalary = parseFloat(salary);
+    // Strip commas (users may type "80,000" for eighty thousand)
+    const numSalary = parseFloat(String(salary).replace(/,/g, ''));
 
     if (isNaN(numSalary)) {
       return { valid: false, error: 'Salary must be a number' };
@@ -71,39 +73,27 @@ class ValidationService {
    * Validate annual bonus
    */
   validateBonus(bonus) {
-    // DEBUG: Log bonus validation
-    console.log('=== ValidationService.validateBonus ===');
-    console.log('Input bonus:', bonus);
-    console.log('Input type:', typeof bonus);
-    console.log('Input length:', bonus?.length);
-
     // Bonus is optional, can be 0
     if (!bonus || bonus === '') {
-      console.log('Bonus is empty - valid');
       return { valid: true };
     }
 
-    const numBonus = parseFloat(bonus);
-    console.log('parseFloat(bonus):', numBonus);
-    console.log('Parsed type:', typeof numBonus);
-    console.log('ValidationRules.bonus.max:', ValidationRules.bonus.max);
+    // Strip commas (users may type "10,000" for ten thousand)
+    const cleaned = String(bonus).replace(/,/g, '');
+    const numBonus = parseFloat(cleaned);
 
     if (isNaN(numBonus)) {
-      console.log('Bonus is NaN - invalid');
       return { valid: false, error: 'Bonus must be a number' };
     }
 
     if (numBonus < ValidationRules.bonus.min) {
-      console.log('Bonus is negative - invalid');
       return { valid: false, error: 'Bonus cannot be negative' };
     }
 
     if (numBonus > ValidationRules.bonus.max) {
-      console.log('Bonus exceeds max - invalid');
       return { valid: false, error: `Bonus cannot exceed $${ValidationRules.bonus.max.toLocaleString()}` };
     }
 
-    console.log('Bonus validation passed');
     return { valid: true };
   }
 

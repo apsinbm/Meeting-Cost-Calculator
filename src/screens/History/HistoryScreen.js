@@ -187,8 +187,7 @@ const HistoryScreen = () => {
     });
 
     // Format duration: convert from minutes, show appropriate format
-    // Use absolute value in case of negative stored values
-    const actualMinutes = Math.abs(item.actualMinutes || 0);
+    const actualMinutes = item.actualMinutes || 0;
     const totalSeconds = Math.round(actualMinutes * 60);
 
     let durationDisplay;
@@ -221,7 +220,7 @@ const HistoryScreen = () => {
           </View>
           <View style={styles.meetingCost}>
             <AppText variant="h3" color={Colors.primary}>
-              {EmployeeCostCalculator.formatCurrency(Math.abs(item.actualCost || 0))}
+              {EmployeeCostCalculator.formatCurrency(item.actualCost || 0)}
             </AppText>
             <AppText variant="caption" color={Colors.textSecondary}>
               {durationDisplay}
@@ -281,7 +280,7 @@ const HistoryScreen = () => {
             <View style={styles.summaryGrid}>
               <View style={styles.summaryItem}>
                 <AppText variant="h2" color={Colors.primary}>
-                  {EmployeeCostCalculator.formatCurrency(Math.abs(summary.totalCost || 0))}
+                  {EmployeeCostCalculator.formatCurrency(summary.totalCost || 0)}
                 </AppText>
                 <AppText variant="caption" color={Colors.textSecondary}>
                   Total Cost
@@ -294,14 +293,14 @@ const HistoryScreen = () => {
                 </AppText>
               </View>
               <View style={styles.summaryItem}>
-                <AppText variant="h2">{formatTimeDuration(Math.abs(summary.totalMinutes || 0))}</AppText>
+                <AppText variant="h2">{formatTimeDuration(summary.totalMinutes || 0)}</AppText>
                 <AppText variant="caption" color={Colors.textSecondary}>
                   Time
                 </AppText>
               </View>
               <View style={styles.summaryItem}>
                 <AppText variant="h2">
-                  {EmployeeCostCalculator.formatCurrency(Math.abs(summary.averageCost || 0))}
+                  {EmployeeCostCalculator.formatCurrency(summary.averageCost || 0)}
                 </AppText>
                 <AppText variant="caption" color={Colors.textSecondary}>
                   Avg/Meeting
@@ -556,7 +555,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     fontSize: 14,  // reduced from 16
-    color: Colors.text,
+    color: Colors.textPrimary,
     backgroundColor: Colors.background,
   },
   modalButtons: {

@@ -21,7 +21,7 @@ class ExportService {
       }
 
       // CSV header
-      const header = 'Name,Role,Email,Annual Salary,Annual Bonus,Health Insurance,Per-Minute Cost,Hourly Cost,Total Annual Cost\n';
+      const header = 'Name,Role,Email,Annual Salary,Annual Bonus,Health Plan,Per-Minute Cost,Hourly Cost,Total Annual Cost\n';
 
       // CSV rows
       const rows = employees.map((emp) => {
@@ -31,7 +31,7 @@ class ExportService {
           `"${emp.email || ''}"`,
           emp.annualSalary || 0,
           emp.annualBonus || 0,
-          emp.includesHealthInsurance ? 'Yes' : 'No',
+          `"${emp.healthInsurancePlan || 'Standard'}"`,
           emp.perMinuteCost?.toFixed(3) || 0,
           emp.hourlyCost?.toFixed(2) || 0,
           emp.totalAnnualCost?.toFixed(2) || 0,

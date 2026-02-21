@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, ScrollView, Alert, Modal } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Modal, AppState } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText, Button, Card } from '../../components';
 import CostMilestoneFlash from '../../components/CostMilestoneFlash';
-import { Colors, Spacing, FontSizes } from '../../constants';
+import { Colors, Spacing, FontSizes, BermudaDefaults } from '../../constants';
 import { scaledFontSize } from '../../utils/iPadOptimization';
 import MeetingCostCalculator from '../../services/MeetingCostCalculator';
 import MeetingService from '../../services/MeetingService';
@@ -15,7 +15,7 @@ import AudioService from '../../services/AudioService';
  * Real-time cost tracking with per-second updates and milestone detection
  */
 const ActiveMeetingScreen = ({ route, navigation }) => {
-  const { meeting: initialMeeting, attendees } = route.params;
+  const { meeting: initialMeeting, attendees = [] } = route.params || {};
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -32,12 +32,34 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   useEffect(() => {
     startMeeting();
 
+    // Listen for app state changes to recalculate elapsed time when returning from background
+    const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
+
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      appStateSubscription?.remove();
     };
   }, []);
+
+  // Handle app state changes (background/foreground)
+  const handleAppStateChange = (nextAppState) => {
+    if (nextAppState === 'active') {
+      // App came to foreground - recalculate elapsed time based on actual timestamps
+      updateElapsedFromTimestamps();
+    }
+  };
+
+  // Calculate elapsed seconds from timestamps (handles background/screen lock accurately)
+  const updateElapsedFromTimestamps = () => {
+    if (isPausedRef.current) return; // Don't update if paused
+
+    const now = Date.now();
+    const totalElapsedMs = now - startTimeRef.current - pausedTimeRef.current;
+    const newElapsedSeconds = Math.floor(totalElapsedMs / 1000);
+    setElapsedSeconds(newElapsedSeconds);
+  };
 
   const startMeeting = async () => {
     // Create meeting record
@@ -59,9 +81,14 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   };
 
   const startTimer = () => {
+    // Use timestamp-based calculation for accurate time tracking
+    // This ensures time continues correctly even when screen is locked or app is backgrounded
     timerRef.current = setInterval(() => {
       if (!isPausedRef.current) {
-        setElapsedSeconds((prev) => prev + 1);
+        const now = Date.now();
+        const totalElapsedMs = now - startTimeRef.current - pausedTimeRef.current;
+        const newElapsedSeconds = Math.floor(totalElapsedMs / 1000);
+        setElapsedSeconds(newElapsedSeconds);
       }
     }, 1000);
   };
@@ -158,7 +185,7 @@ const ActiveMeetingScreen = ({ route, navigation }) => {
   };
 
   // Calculate progress bar based on current milestone interval
-  const milestones = [1, 15, 30, 45, 60, 90, 120];
+  const milestones = BermudaDefaults.milestones;
   let progressPercent = 0;
 
   if (realTimeCost.nextMilestone) {

@@ -52,7 +52,7 @@ const EmployeeListScreen = ({ navigation }) => {
       (emp) =>
         emp.name.toLowerCase().includes(lowerQuery) ||
         emp.role.toLowerCase().includes(lowerQuery) ||
-        emp.email.toLowerCase().includes(lowerQuery)
+        (emp.email || '').toLowerCase().includes(lowerQuery)
     );
 
     setFilteredEmployees(filtered);

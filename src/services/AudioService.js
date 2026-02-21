@@ -106,7 +106,7 @@ class AudioService {
    * Play klaxon warning sound
    * Ensures the sound is loud and plays even if device is in silent mode
    */
-  async playBeep(frequency, duration) {
+  async playBeep() {
     let sound = null;
     try {
       // Initialize audio to ensure proper session setup

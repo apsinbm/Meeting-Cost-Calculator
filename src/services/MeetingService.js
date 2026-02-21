@@ -193,7 +193,7 @@ class MeetingService {
       const startTime = new Date(meeting.actualStart);
       const endTime = new Date(actualEnd);
       const wallClockMs = endTime - startTime;
-      const activeMs = wallClockMs - pausedTimeMs;
+      const activeMs = Math.max(0, wallClockMs - pausedTimeMs);
       // Store as decimal minutes for per-second accuracy (e.g., 45 seconds = 0.75 minutes)
       const actualMinutes = activeMs / (1000 * 60);
 
@@ -205,6 +205,9 @@ class MeetingService {
         scheduledMinutes
       );
 
+      // Ad-hoc meetings (isManual) have no scheduled duration, so ranOver/endedEarly don't apply
+      const isAdHoc = meeting.isManual || !meeting.durationMinutes;
+
       meetings[index] = {
         ...meeting,
         actualEnd,
@@ -212,10 +215,10 @@ class MeetingService {
         pausedTimeMs, // Store for reference/debugging
         status: 'completed',
         actualCost: finalCosts.actualCost,
-        costDifference: finalCosts.costDifference,
-        ranOver: finalCosts.ranOver,
-        endedEarly: finalCosts.endedEarly,
-        minutesDifference: actualMinutes - scheduledMinutes,
+        costDifference: isAdHoc ? 0 : finalCosts.costDifference,
+        ranOver: isAdHoc ? false : finalCosts.ranOver,
+        endedEarly: isAdHoc ? false : finalCosts.endedEarly,
+        minutesDifference: isAdHoc ? 0 : (actualMinutes - scheduledMinutes),
         updatedAt: actualEnd,
       };
 

@@ -1,4 +1,5 @@
 import StorageService from './StorageService';
+import CompanyService from './CompanyService';
 import EmployeeCostCalculator from './EmployeeCostCalculator';
 import ValidationService from './ValidationService';
 import { BermudaDefaults } from '../constants';
@@ -39,16 +40,9 @@ class EmployeeService {
    */
   async addEmployee(employeeData) {
     try {
-      // DEBUG: Log received data
-      console.log('=== EmployeeService.addEmployee ===');
-      console.log('Received employeeData:', JSON.stringify(employeeData, null, 2));
-      console.log('annualBonus raw:', employeeData.annualBonus);
-      console.log('annualBonus type:', typeof employeeData.annualBonus);
-
       // Validate employee data
       const validation = ValidationService.validateEmployee(employeeData);
       if (!validation.valid) {
-        console.log('Validation failed:', validation.errors);
         return {
           success: false,
           errors: validation.errors,
@@ -56,15 +50,14 @@ class EmployeeService {
       }
 
       // Get current settings for cost calculation
-      const settings = await StorageService.getSettings();
+      const settings = await CompanyService.getSettings();
 
       // Calculate costs
       const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData, settings);
 
-      // DEBUG: Log parsed values
-      const parsedBonus = parseFloat(employeeData.annualBonus) || 0;
-      console.log('parseFloat(annualBonus):', parsedBonus);
-      console.log('Parsed bonus type:', typeof parsedBonus);
+      // Strip commas from numeric inputs (users may type "10,000")
+      const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
+      const parsedBonus = cleanNum(employeeData.annualBonus);
 
       // Determine health insurance plan (use provided or default)
       const healthPlanName = employeeData.healthInsurancePlan || BermudaDefaults.defaultHealthInsurancePlan;
@@ -74,9 +67,9 @@ class EmployeeService {
       const employee = {
         id: this._generateId(),
         name: employeeData.name.trim(),
-        role: employeeData.role.trim(),
+        role: employeeData.role ? employeeData.role.trim() : '',
         email: employeeData.email ? employeeData.email.trim().toLowerCase() : '',
-        annualSalary: parseFloat(employeeData.annualSalary),
+        annualSalary: cleanNum(employeeData.annualSalary),
         annualBonus: parsedBonus,
         healthInsurancePlan: healthPlanName,
         healthInsuranceMonthly: parseFloat(healthPlanMonthly),
@@ -87,8 +80,6 @@ class EmployeeService {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-
-      console.log('Final employee object bonus:', employee.annualBonus);
 
       // Get existing employees
       const employees = await this.getEmployees();
@@ -160,10 +151,13 @@ class EmployeeService {
       }
 
       // Get current settings for cost calculation
-      const settings = await StorageService.getSettings();
+      const settings = await CompanyService.getSettings();
 
       // Calculate costs
       const costs = EmployeeCostCalculator.calculateEmployeeCost(employeeData, settings);
+
+      // Strip commas from numeric inputs (users may type "10,000")
+      const cleanNum = (val) => parseFloat(String(val).replace(/,/g, '')) || 0;
 
       // Determine health insurance plan (use provided or keep existing)
       const healthPlanName = employeeData.healthInsurancePlan || employees[index].healthInsurancePlan || BermudaDefaults.defaultHealthInsurancePlan;
@@ -173,10 +167,10 @@ class EmployeeService {
       employees[index] = {
         ...employees[index],
         name: employeeData.name.trim(),
-        role: employeeData.role.trim(),
+        role: employeeData.role ? employeeData.role.trim() : '',
         email: employeeData.email ? employeeData.email.trim().toLowerCase() : '',
-        annualSalary: parseFloat(employeeData.annualSalary),
-        annualBonus: parseFloat(employeeData.annualBonus) || 0,
+        annualSalary: cleanNum(employeeData.annualSalary),
+        annualBonus: cleanNum(employeeData.annualBonus),
         healthInsurancePlan: healthPlanName,
         healthInsuranceMonthly: parseFloat(healthPlanMonthly),
         healthInsuranceAnnual: parseFloat(healthPlanMonthly) * 12,  // Calculated from monthly
@@ -241,8 +235,8 @@ class EmployeeService {
 
       return employees.filter(emp =>
         emp.name.toLowerCase().includes(lowerQuery) ||
-        emp.email.toLowerCase().includes(lowerQuery) ||
-        emp.role.toLowerCase().includes(lowerQuery)
+        (emp.email || '').toLowerCase().includes(lowerQuery) ||
+        (emp.role || '').toLowerCase().includes(lowerQuery)
       );
     } catch (error) {
       console.error('Error searching employees:', error);
@@ -256,7 +250,7 @@ class EmployeeService {
   async getEmployeeByEmail(email) {
     try {
       const employees = await this.getEmployees();
-      return employees.find(emp => emp.email.toLowerCase() === email.toLowerCase());
+      return employees.find(emp => (emp.email || '').toLowerCase() === email.toLowerCase());
     } catch (error) {
       console.error('Error getting employee by email:', error);
       return null;
@@ -269,7 +263,7 @@ class EmployeeService {
   async recalculateAllCosts() {
     try {
       const employees = await this.getEmployees();
-      const settings = await StorageService.getSettings();
+      const settings = await CompanyService.getSettings();
 
       const updatedEmployees = EmployeeCostCalculator.recalculateAllEmployees(employees, settings);
 
@@ -337,9 +331,13 @@ class EmployeeService {
         await this.recalculateAllCosts();
       }
 
+      const migratedCount = needsSave
+        ? migratedEmployees.filter(e => !employees.find(orig => orig.id === e.id && orig.healthInsurancePlan)).length
+        : 0;
+
       return {
         success: true,
-        migratedCount: employees.length - migratedEmployees.filter(e => e.healthInsurancePlan).length,
+        migratedCount,
       };
     } catch (error) {
       console.error('Error migrating health insurance plans:', error);
