@@ -44,6 +44,7 @@ const Button = ({
         <ActivityIndicator color={getTextColor()} />
       ) : (
         <Text
+          numberOfLines={1}
           style={[
             styles.buttonText,
             { color: getTextColor() },
