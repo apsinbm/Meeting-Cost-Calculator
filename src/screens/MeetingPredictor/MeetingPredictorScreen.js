@@ -141,14 +141,14 @@ const MeetingPredictorScreen = ({ navigation }) => {
               title={selectedAttendees.length === 0 ? 'Select Attendees' : 'Change'}
               variant="secondary"
               onPress={handleSelectAttendees}
-              style={selectedAttendees.length > 0 ? { flex: 1, marginRight: Spacing.sm } : {}}
+              style={selectedAttendees.length > 0 ? { flex: 1, flexBasis: '0%', marginRight: Spacing.sm } : {}}
             />
             {selectedAttendees.length > 0 && (
               <Button
                 title="Clear"
                 variant="secondary"
                 onPress={() => setSelectedAttendees([])}
-                style={{ flex: 1 }}
+                style={{ flex: 1, flexBasis: '0%' }}
               />
             )}
           </View>
