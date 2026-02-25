@@ -137,18 +137,28 @@ const MeetingPredictorScreen = ({ navigation }) => {
             </View>
           )}
           <View style={styles.attendeeButtons}>
-            <Button
-              title={selectedAttendees.length === 0 ? 'Select Attendees' : 'Change'}
-              variant="secondary"
-              onPress={handleSelectAttendees}
-              style={selectedAttendees.length > 0 ? { flex: 1, flexBasis: '0%', marginRight: Spacing.sm } : {}}
-            />
-            {selectedAttendees.length > 0 && (
+            {selectedAttendees.length > 0 ? (
+              <>
+                <View style={{ flex: 1, marginRight: Spacing.sm }}>
+                  <Button
+                    title="Change"
+                    variant="secondary"
+                    onPress={handleSelectAttendees}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Button
+                    title="Clear"
+                    variant="secondary"
+                    onPress={() => setSelectedAttendees([])}
+                  />
+                </View>
+              </>
+            ) : (
               <Button
-                title="Clear"
+                title="Select Attendees"
                 variant="secondary"
-                onPress={() => setSelectedAttendees([])}
-                style={{ flex: 1, flexBasis: '0%' }}
+                onPress={handleSelectAttendees}
               />
             )}
           </View>
